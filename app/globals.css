@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+:root {
+  /*Brand */
+  --color-brand-50: #f9f5ec; /* Floral White */
+  --color-brand-100: #ae894a; /* Camel */
+  --color-brand-200: #333a3f; /* Jet Black */
+  --color-brand-300: #f2f2f2; /* White Smoke */
+  --color-brand-900: #1b2a47; /* Bleu Space Indigo*/
+
+  --card-bg: rgba(27, 42, 71, 0.03);
+  --card-border: rgba(27, 42, 71, 0.14);
+  --muted: rgba(27, 42, 71, 0.7);
+
+  /* Light */
+  --bg: var(--color-brand-300);
+  --menuDash: var(--color-brand-300);
+  --text: var(--color-brand-200);
+  --header: rgba(249, 245, 236, 0.86);
+  --overlay: var(--color-brand-900);
+  --overlayText: var(--color-brand-50);
+  --menuDash: var(--color-brand-300);
+  --navbarDash: var(--color-brand-100);
+}
+
+html[data-theme="dark"] {
+  --bg: #0f172a;
+  --text: var(--color-brand-50);
+  --header: rgba(249, 245, 236, 0.86);
+  --overlay: var(--color-brand-900);
+  --overlayText: var(--color-brand-50);
+  --navbarDash: var(--color-brand-100);
+  --card-bg: rgba(249, 245, 236, 0.06);
+  --card-border: rgba(249, 245, 236, 0.16);
+  --muted: rgba(249, 245, 236, 0.72);
+}
+
+/* Base (optionnel mais clean) */
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* CSS pour la navbar du Header */
+.menu-label {
+  font-family: var(--font-primary), sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  font-size: clamp(2.2rem, 3.6vw, 4rem);
+  line-height: 1.05;
+  color: var(--color-brand-300);
+}
+
+.menu-dash {
+  transform-origin: left center;
+  transition:
+    transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0.8;
+}
+
+/* Quand on survole le bloc (num + trait + label), le trait s’étire */
+.group:hover .menu-dash {
+  transform: scaleX(2.2);
+  opacity: 1;
+}
+
+/* CSS pour la HeroSection */
+/* ===== TICKER / MARQUEE (mobile friendly) ===== */
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.ticker__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(0, 0, 0); /* perf mobile */
+  animation: ticker-x var(--ticker-duration, 18s) linear infinite;
+}
+
+.ticker__group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+
+  font-size: var(--ticker-font, 0.85rem);
+  font-weight: 700;
+  letter-spacing: var(--ticker-letter, 0.12em);
+  text-transform: uppercase;
+  line-height: 1;
+
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ticker__diamond {
+  width: var(--ticker-diamond, 8px);
+  height: var(--ticker-diamond, 8px);
+  margin: 0 var(--ticker-gap, 18px);
+  transform: rotate(45deg);
+  background: var(--color-brand-100);
+  opacity: 0.9;
+  flex: 0 0 auto;
+}
+
+/* Masque doux (desktop) */
+.mask-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+/* Mobile tuning */
+@media (max-width: 640px) {
+  :root {
+    --ticker-font: 0.72rem;
+    --ticker-letter: 0.08em;
+    --ticker-gap: 12px;
+    --ticker-diamond: 6px;
+    --ticker-duration: 14s; /* un peu plus rapide pour éviter l'impression de "bloc" */
+  }
+
+  .mask-fade {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 6%,
+      black 94%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 6%,
+      black 94%,
+      transparent
+    );
+  }
+}
+
+/* Respect des préférences */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track {
+    animation: none;
+    transform: none;
+  }
+}
+
+@keyframes ticker-x {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  } /* 2 groupes identiques */
+}
+
+/* 
+* { outline: 1px solid rgba(255,0,0,.15); } */
