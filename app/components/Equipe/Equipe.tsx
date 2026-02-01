@@ -1,15 +1,14 @@
 "use client";
-import CustomTitle from "../ui/CustomTitle/CustomTitle";
 
+import CustomTitle from "../ui/CustomTitle/CustomTitle";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+
 import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
+
 import { FaLinkedinIn } from "react-icons/fa";
 import { motion } from "motion/react";
-
-gsap.registerPlugin(ScrollTrigger);
 
 type Member = {
   name: string;
@@ -47,36 +46,55 @@ function TeamCard({ m }: { m: Member }) {
 
   useGSAP(
     () => {
-      const reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      if (reduce) return;
+      ensureGSAP();
 
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const el = cardRef.current;
       if (!el) return;
 
+      // ✅ évite les doublons en dev si jamais
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.trigger === el) st.kill();
+      });
+
       const q = gsap.utils.selector(el);
+      const photo = q(".team-photo");
+      const name = q(".team-name");
+      const meta = q(".team-meta");
+      const li = q(".team-li");
+
+      if (reduce) {
+        gsap.set([photo, name, meta, li], { clearProps: "all" });
+        return;
+      }
 
       // états init
-      gsap.set(q(".team-photo"), { autoAlpha: 0, scale: 1.04 });
-      gsap.set(q(".team-name"), { autoAlpha: 0, y: 12 });
-      gsap.set(q(".team-meta"), { autoAlpha: 0, y: 12 });
-      gsap.set(q(".team-li"), { autoAlpha: 0, y: 8 });
+      gsap.set(photo, { autoAlpha: 0, scale: 1.04 });
+      gsap.set(name, { autoAlpha: 0, y: 12 });
+      gsap.set(meta, { autoAlpha: 0, y: 12 });
+      gsap.set(li, { autoAlpha: 0, y: 8 });
 
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
         scrollTrigger: {
           trigger: el,
           start: "top 80%",
-          toggleActions: "play none none none", // ✅ pas de reverse
+          toggleActions: "play none none none",
+          invalidateOnRefresh: true,
         },
       });
 
-      // Photo -> Nom -> Infos -> LinkedIn
-      tl.to(q(".team-photo"), { autoAlpha: 1, scale: 1, duration: 0.5 })
-        .to(q(".team-name"), { autoAlpha: 1, y: 0, duration: 0.28 }, "-=0.15")
-        .to(q(".team-meta"), { autoAlpha: 1, y: 0, duration: 0.28 }, "-=0.10")
-        .to(q(".team-li"), { autoAlpha: 1, y: 0, duration: 0.2 }, "-=0.08");
+      tl.to(photo, { autoAlpha: 1, scale: 1, duration: 0.5 })
+        .to(name, { autoAlpha: 1, y: 0, duration: 0.28 }, "-=0.15")
+        .to(meta, { autoAlpha: 1, y: 0, duration: 0.28 }, "-=0.10")
+        .to(li, { autoAlpha: 1, y: 0, duration: 0.2 }, "-=0.08");
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        tl.kill();
+      };
     },
     { scope: cardRef },
   );
@@ -85,7 +103,7 @@ function TeamCard({ m }: { m: Member }) {
     <div
       ref={cardRef}
       className={[
-        "group rounded-3xl border p-5 sm:p-6", // group pour le hover image
+        "group rounded-3xl border p-5 sm:p-6",
         "bg-(--card-bg) border-(--card-border)",
         "backdrop-blur",
         "transition-[border-color,box-shadow,transform] duration-300",
@@ -103,8 +121,8 @@ function TeamCard({ m }: { m: Member }) {
             fill
             className={[
               "object-cover transition-transform duration-500 ease-out",
-              "group-hover:scale-[1.04]", // zoom léger au hover
-              m.name === "Alexandre" ? "object-[50%_80%]" : "object-[50%_40%]", // Alexandre plus haut
+              "group-hover:scale-[1.04]",
+              m.name === "Alexandre" ? "object-[50%_80%]" : "object-[50%_40%]",
             ].join(" ")}
             sizes="(max-width: 768px) 100vw, 50vw"
           />
@@ -122,7 +140,6 @@ function TeamCard({ m }: { m: Member }) {
           </h3>
         </div>
 
-        {/* LinkedIn (press) */}
         <motion.button
           type="button"
           aria-label={`LinkedIn ${m.name}`}
@@ -131,15 +148,14 @@ function TeamCard({ m }: { m: Member }) {
           whileTap={{ scale: 0.88 }}
           transition={{ type: "tween", duration: 0.08 }}
           onClick={() => {
-            if (m.linkedin !== "#")
-              window.open(m.linkedin, "_blank", "noopener,noreferrer");
+            if (m.linkedin !== "#") window.open(m.linkedin, "_blank", "noopener,noreferrer");
           }}
         >
           <FaLinkedinIn className="text-lg" />
         </motion.button>
       </div>
 
-      {/* Contacts (typo fine + spacing) */}
+      {/* Contacts */}
       <div className="team-meta mt-5 space-y-3">
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-semibold tracking-[0.18em] text-(--muted)">
@@ -176,12 +192,10 @@ export default function Equipe() {
         <div className="max-w-2xl">
           <CustomTitle title="Les associés" />
           <p className="mt-4 text-sm leading-relaxed text-(--muted) md:text-base">
-            Une équipe resserrée, un pilotage clair et un accompagnement orienté
-            résultat.
+            Une équipe resserrée, un pilotage clair et un accompagnement orienté résultat.
           </p>
         </div>
 
-        {/* Desktop + tablette: côte à côte | Mobile: stack (Mylène puis Alexandre) */}
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
           {TEAM.map((m) => (
             <TeamCard key={m.email} m={m} />

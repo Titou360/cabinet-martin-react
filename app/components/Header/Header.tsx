@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
+
+import { gsap, ensureGSAP } from "@/app/lib/gsapClient";
 
 import { FaFacebookF } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
@@ -115,6 +116,7 @@ export default function Header() {
   // GSAP timeline
   useGSAP(
     () => {
+      ensureGSAP();
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;

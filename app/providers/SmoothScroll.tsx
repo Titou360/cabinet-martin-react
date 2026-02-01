@@ -2,48 +2,28 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
 
 export default function SmoothScroll() {
   useEffect(() => {
-    const lenis = new Lenis({
-      lerp: 0.08,
-      smoothWheel: true,
-    });
+    ensureGSAP();
 
-    // Sync Lenis -> ScrollTrigger
+    const lenis = new Lenis();
+
     lenis.on("scroll", ScrollTrigger.update);
 
-    // RAF loop (requestAnimationFrame donne déjà des millisecondes ✅)
-    let rafId = 0;
     const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
+      lenis.raf(time * 1000);
     };
-    rafId = requestAnimationFrame(raf);
 
-    // Quand ScrollTrigger refresh (resize, pin, fonts...), Lenis doit recalculer
-    const onRefresh = () => lenis.resize();
-    ScrollTrigger.addEventListener("refresh", onRefresh);
+    gsap.ticker.add(raf);
+    gsap.ticker.lagSmoothing(0);
 
-    // Refresh “intelligent” (fonts + images + load)
-    const refresh = () => ScrollTrigger.refresh();
-
-    const t = window.setTimeout(refresh, 0);
-    window.addEventListener("load", refresh);
-
-    // si dispo (Chrome/modern)
-    (document as Document & { fonts?: { ready?: Promise<void> } }).fonts?.ready?.then(refresh);
+    // Refresh utile quand images/fonts/split modifient les hauteurs
+    requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
-      window.clearTimeout(t);
-      window.removeEventListener("load", refresh);
-      ScrollTrigger.removeEventListener("refresh", onRefresh);
-
-      cancelAnimationFrame(rafId);
+      gsap.ticker.remove(raf);
       lenis.destroy();
     };
   }, []);

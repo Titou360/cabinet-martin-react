@@ -1,17 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
+import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
 import CustomTitle from "../ui/CustomTitle/CustomTitle";
 
-// Splitting pour l'animation des textes
+// Splitting styles (OK si ton projet les accepte ici)
 import "splitting/dist/splitting.css";
 import "splitting/dist/splitting-cells.css";
-
-gsap.registerPlugin(ScrollTrigger);
 
 type ServiceCardProps = {
   title: string;
@@ -53,46 +50,35 @@ export default function NosServices() {
   const left2Ref = useRef<HTMLDivElement | null>(null);
   const right2Ref = useRef<HTMLDivElement | null>(null);
 
- useGSAP(
-  () => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+  useGSAP(
+    () => {
+      ensureGSAP();
 
-    const section = sectionRef.current;
-    const copyEl = copyRef.current;
-    if (!section || !copyEl) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const section = sectionRef.current;
+      const copyEl = copyRef.current;
 
-    let tl: gsap.core.Timeline | null = null;
-    let killed = false;
+      if (!section || !copyEl) return;
 
-    (async () => {
-      // ✅ import ONLY on client runtime
-      const mod = await import("splitting");
-      const Splitting = mod.default;
-
-      if (killed) return;
-
-      // ✅ Splitting (anti double-run)
-      const targets = Array.from(copyEl.querySelectorAll<HTMLElement>("[data-splitting]"));
-      const toSplit = targets.filter((t) => !t.classList.contains("splitting"));
-
-      if (toSplit.length) {
-        Splitting({ target: toSplit, by: "words" });
-        ScrollTrigger.refresh();
-      }
-
-      const words = Array.from(copyEl.querySelectorAll<HTMLElement>(".word"));
-      if (!words.length) return;
-
-      // ----------------------------
-      // Ici tu remets TON code GSAP :
-      // init words / init cards / timeline pin+scrub
-      // ----------------------------
+      let killed = false;
 
       const CLIP_SHOW = "inset(0% 0% 0% 0%)";
       const CLIP_HIDE_LEFT = "inset(0% 100% 0% 0%)";
       const CLIP_HIDE_RIGHT = "inset(0% 0% 0% 100%)";
 
+      // Reduced motion: tout visible
+      if (reduce) {
+        gsap.set([left1Ref.current, right1Ref.current, left2Ref.current, right2Ref.current], {
+          clearProps: "all",
+          autoAlpha: 1,
+          x: 0,
+          y: 0,
+          clipPath: CLIP_SHOW,
+        });
+        return;
+      }
+
+      // ✅ INIT cards immédiatement
       gsap.set([left1Ref.current, left2Ref.current], {
         autoAlpha: 0,
         x: -80,
@@ -107,75 +93,95 @@ export default function NosServices() {
         willChange: "transform, clip-path, opacity",
       });
 
-      gsap.set(words, {
-        opacity: 0.15,
-        color: "rgba(249,245,236,0.35)",
-        willChange: "opacity, color",
-      });
-
-      tl = gsap.timeline({
+      // ✅ Timeline + PIN créé TOUT DE SUITE (c’est ça qui évite de casser Banner/Equipe/Footer)
+      const tl = gsap.timeline({
         defaults: { ease: "power2.out" },
         scrollTrigger: {
+          id: "services-pin",
           trigger: section,
           start: "top top",
           end: "+=1800",
           scrub: true,
           pin: true,
           anticipatePin: 1,
+          invalidateOnRefresh: true,
+          refreshPriority: 10,
+          // markers: true,
         },
       });
 
+      // Fenêtres de scroll
       const TEXT_START = 0.08;
-      const TEXT_WINDOW = 1.0;
+      const TEXT_WINDOW = 0.95;
       const CARD_GAP = 0.12;
-
-      // ✅ effet "codepen like"
-      tl.set(
-        words,
-        {
-          opacity: 1,
-          color: "rgba(249,245,236,0.92)",
-          stagger: { amount: TEXT_WINDOW },
-        },
-        TEXT_START
-      );
-
       const CARDS_1_AT = TEXT_START + TEXT_WINDOW + CARD_GAP;
-
-      tl.to(
-        left1Ref.current,
-        { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 },
-        CARDS_1_AT
-      ).to(
-        right1Ref.current,
-        { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 },
-        CARDS_1_AT
-      );
-
       const PAUSE = 0.12;
-      tl.to({}, { duration: PAUSE });
-
       const CARDS_2_AT = CARDS_1_AT + 0.35 + PAUSE;
 
-      tl.to(
-        left2Ref.current,
-        { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 },
-        CARDS_2_AT
-      ).to(
-        right2Ref.current,
-        { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 },
-        CARDS_2_AT
-      );
-    })();
+      // Cards après le texte
+      tl.to(left1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
+        .to(right1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
+        .to({}, { duration: PAUSE })
+        .to(left2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT)
+        .to(right2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT);
 
-    return () => {
-      killed = true;
-      tl?.scrollTrigger?.kill();
-      tl?.kill();
-    };
-  },
-  { scope: sectionRef }
-);
+      // ✅ Import dynamique Splitting (SSR-safe)
+      (async () => {
+        const mod = await import("splitting");
+        const Splitting = mod.default;
+        if (killed) return;
+
+        const targets = Array.from(copyEl.querySelectorAll<HTMLElement>("[data-splitting]"));
+        const toSplit = targets.filter((t) => !t.classList.contains("splitting"));
+
+        if (toSplit.length) {
+          Splitting({ target: toSplit, by: "words" });
+        }
+
+        if (killed) return;
+
+        const words = Array.from(copyEl.querySelectorAll<HTMLElement>(".word"));
+        if (!words.length) {
+          // si Splitting ne sort rien, on refresh quand même
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+          return;
+        }
+
+        // init words
+        gsap.set(words, {
+          opacity: 0.15,
+          color: "rgba(249,245,236,0.35)",
+          willChange: "opacity, color",
+        });
+
+        // reveal mot par mot (inséré dans la timeline déjà pin)
+        tl.to(
+          words,
+          {
+            opacity: 1,
+            color: "rgba(249,245,236,0.92)",
+            duration: TEXT_WINDOW,
+            ease: "none",
+            stagger: { amount: TEXT_WINDOW, from: "start" },
+          },
+          TEXT_START,
+        );
+
+        // ✅ refresh après split + insertion tween
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      })();
+
+      // ✅ refresh après création du pin (super important pour les sections en dessous)
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      return () => {
+        killed = true;
+        tl.scrollTrigger?.kill();
+        tl.kill();
+      };
+    },
+    { scope: sectionRef },
+  );
 
   return (
     <section
@@ -186,9 +192,8 @@ export default function NosServices() {
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
         <CustomTitle title="Nos Services" offset={30} />
 
-        {/* ✅ Texte: Splitting va découper en .word */}
         <div ref={copyRef} className="mt-1 max-w-6xl">
-          <p data-splitting="words" className="text-2xl leading-relaxed">
+          <p data-splitting className="text-2xl leading-relaxed">
             Dans un environnement économique en constante évolution, l&apos;accès aux financements
             publics et privés est devenu un levier essentiel. Cependant, le processus de recherche
             et d&apos;obtention représente un défi de gestion de projet et de compétence réglementaire
@@ -198,7 +203,7 @@ export default function NosServices() {
           <ul className="mt-5 space-y-3 text-base leading-relaxed">
             <li className="flex gap-3">
               <span className="shrink-0 text-[rgba(249,245,236,0.35)]">•</span>
-              <span data-splitting="words">
+              <span data-splitting>
                 Multiplicité des Sources de Financement : Des milliers de dispositifs existent,
                 émanant de l&apos;Europe, de l&apos;État, des Régions, des Départements, des Collectivités
                 Territoriales, ainsi que d&apos;organismes spécifiques (ADEME, Bpifrance, CEE,
@@ -208,7 +213,7 @@ export default function NosServices() {
 
             <li className="flex gap-3">
               <span className="shrink-0 text-[rgba(249,245,236,0.35)]">•</span>
-              <span data-splitting="words">
+              <span data-splitting>
                 Évolution Constante et Spécificité : Les critères d&apos;éligibilité, les dates limites et
                 les cahiers des charges changent fréquemment et sont spécifiques à chaque appel à
                 projets.
@@ -217,7 +222,7 @@ export default function NosServices() {
 
             <li className="flex gap-3">
               <span className="shrink-0 text-[rgba(249,245,236,0.35)]">•</span>
-              <span data-splitting="words">
+              <span data-splitting>
                 Exigence des Dossiers : La constitution des dossiers requiert une technicité
                 financière et rédactionnelle spécialisée, rendant l&apos;optimisation des chances de
                 succès délicate sans un savoir-faire dédié.

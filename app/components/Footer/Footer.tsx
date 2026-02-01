@@ -1,25 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaGoogle } from "react-icons/fa";
 import Image from "next/image";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaGoogle } from "react-icons/fa";
 
 export default function Footer() {
   const scopeRef = useRef<HTMLElement | null>(null);
 
   useGSAP(
     () => {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) return;
+      ensureGSAP();
 
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const scope = scopeRef.current;
       if (!scope) return;
+
+      // ✅ kill d'éventuels anciens triggers liés à ce footer
+      ScrollTrigger.getAll().forEach((st) => {
+        if (st.trigger === scope) st.kill();
+      });
+
+      if (reduce) return;
 
       const q = gsap.utils.selector(scope);
 
@@ -28,52 +32,52 @@ export default function Footer() {
       const cols = q('[data-fx="col"]');
       const bottom = q('[data-fx="bottom"]');
 
-      // États init (micro, élégant)
-      gsap.set([top, ctas, cols, bottom], { autoAlpha: 0, y: 16 });
+      const all = [...top, ...ctas, ...cols, ...bottom];
+      gsap.set(all, { autoAlpha: 0, y: 16 });
 
-      // Timeline unique, 1 seule fois, pas de reverse
-      gsap
-        .timeline({
-          defaults: { ease: "power2.out" },
-          scrollTrigger: {
-            trigger: scope,
-            start: "top 88%",
-            toggleActions: "play none none none",
-          },
-        })
-        // haut
-        .to(top, { autoAlpha: 1, y: 0, duration: 0.45 })
+      const tl = gsap.timeline({
+        defaults: { ease: "power2.out" },
+        scrollTrigger: {
+          trigger: scope,
+          start: "top 88%",
+          toggleActions: "play none none none",
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.to(top, { autoAlpha: 1, y: 0, duration: 0.45 })
         .to(ctas, { autoAlpha: 1, y: 0, duration: 0.35, stagger: 0.06 }, "-=0.20")
-        // colonnes
         .to(cols, { autoAlpha: 1, y: 0, duration: 0.42, stagger: 0.10 }, "-=0.10")
-        // bas
         .to(bottom, { autoAlpha: 1, y: 0, duration: 0.35 }, "-=0.05");
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        tl.kill();
+      };
     },
-    { scope: scopeRef }
+    { scope: scopeRef },
   );
 
   return (
     <footer ref={scopeRef} className="bg-(--color-brand-900) text-(--overlayText)">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:px-8">
-        {/* Top */}
         <div
           data-fx="top"
           className="flex flex-col gap-8 border-b border-white/10 pb-10 md:flex-row md:items-start md:justify-between"
         >
-          {/* Brand */}
           <div className="max-w-xl">
             <div className="flex items-center gap-3">
-            <span
-              className="inline-flex size-18 shrink-0 items-center justify-center bg-[rgba(27,42,71,0.08)]"
-            >
-              <Image
-                src="/img/logo/logo-cabinet-martin-ma-128x128.png"
-                className="object-contain"
-                width={64}
-                height={64}
-                alt="Logo Cabinet Martin M&A"
-              />
-            </span>
+              <span className="inline-flex size-18 shrink-0 items-center justify-center bg-[rgba(27,42,71,0.08)]">
+                <Image
+                  src="/img/logo/logo-cabinet-martin-ma-128x128.png"
+                  className="object-contain"
+                  width={64}
+                  height={64}
+                  alt="Logo Cabinet Martin M&A"
+                />
+              </span>
 
               <div className="min-w-0">
                 <p className="text-sm font-semibold tracking-wide">Cabinet Martin M&amp;A</p>
@@ -87,8 +91,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* CTA */}
-          <div className="flex w-full flex-col gap-3 md:w-auto md:min-w-[280px]">
+          <div className="flex w-full flex-col gap-3 md:w-auto md:min-w-70">
             <Link
               data-fx="cta"
               href="/prendre-rdv"
@@ -107,9 +110,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Middle grid */}
         <div className="grid gap-10 pt-10 md:grid-cols-12">
-          {/* Nav */}
           <div data-fx="col" className="md:col-span-4">
             <p className="text-xs font-semibold tracking-[0.18em] text-white/60">NAVIGATION</p>
             <ul className="mt-4 space-y-3 text-sm text-white/80">
@@ -122,7 +123,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div data-fx="col" className="md:col-span-4">
             <p className="text-xs font-semibold tracking-[0.18em] text-white/60">CONTACT</p>
 
@@ -150,7 +150,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Legal */}
           <div data-fx="col" className="md:col-span-4">
             <p className="text-xs font-semibold tracking-[0.18em] text-white/60">LÉGAL</p>
             <ul className="mt-4 space-y-3 text-sm text-white/80">
@@ -160,19 +159,27 @@ export default function Footer() {
             </ul>
 
             <p className="mt-6 text-xs leading-relaxed text-white/55">
-              Cabinet Martin M&amp;A, SARL. Paiement à la réussite selon conditions et éligibilité du
-              projet.
+              Cabinet Martin M&amp;A, SARL. Paiement à la réussite selon conditions et éligibilité du projet.
             </p>
           </div>
         </div>
 
-        {/* Bottom */}
         <div
           data-fx="bottom"
           className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/55 md:flex-row md:items-center md:justify-between"
         >
           <p>© {new Date().getFullYear()} Cabinet Martin M&amp;A. Tous droits réservés.</p>
-          <p className="text-white/45">Conçu par <a className="hover:text-(--color-brand-100)" href="https://www.nemosolutions.fr" target="_blank" rel="noopener noreferrer">🐙 NemoSolutions</a></p>
+          <p className="text-white/45">
+            Conçu par{" "}
+            <a
+              className="hover:text-(--color-brand-100)"
+              href="https://www.nemosolutions.fr"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🐙 NemoSolutions
+            </a>
+          </p>
         </div>
       </div>
     </footer>

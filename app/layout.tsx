@@ -8,6 +8,7 @@ import { fontPrimary } from "./fonts"
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import SmoothScroll from "./providers/SmoothScroll";
+import GSAPProvider from "./providers/GSAPProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
         className={`${fontPrimary.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SmoothScroll />
+        <GSAPProvider />
         <Header />
         {children}
         <Footer />

@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
 
 type CustomTitleProps = {
   title: string;
   className?: string;
-  parallax?: boolean;     // activé par défaut
-  offset?: number;        // intensité du parallax
+  parallax?: boolean;
+  offset?: number;
 };
 
 export default function CustomTitle({
@@ -24,29 +21,41 @@ export default function CustomTitle({
 
   useGSAP(
     () => {
-      if (!titleRef.current) return;
+      ensureGSAP();
+
+      const el = titleRef.current;
+      if (!el) return;
 
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) return;
+      if (reduce || !parallax) return;
 
-      // ✅ état initial (facultatif mais propre)
-      gsap.set(titleRef.current, { y: 0 });
+      // ✅ kill uniquement CE title (évite accumulation en dev)
+      const id = `ct-${title}`;
+      ScrollTrigger.getById(id)?.kill();
 
-      // ✅ parallax lié au scroll
-      if (parallax) {
-        gsap.to(titleRef.current, {
-          y: -offset,
-          ease: "none",
-          scrollTrigger: {
-            trigger: titleRef.current,     // ou le parent section si tu préfères
-            start: "top bottom",           // quand le titre entre dans l'écran
-            end: "bottom top",             // quand il sort
-            scrub: true,                   // suit le scroll (parallax)
-          },
-        });
-      }
+      gsap.set(el, { y: 0 });
+
+      const tween = gsap.to(el, {
+        y: -offset,
+        ease: "none",
+        scrollTrigger: {
+          id,
+          trigger: el,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
     },
-    { scope: titleRef } // ✅ scope GSAP propre
+    { scope: titleRef },
   );
 
   return (
