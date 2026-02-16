@@ -239,7 +239,7 @@ export default function Realisations() {
         {/* Header */}
         <div className="max-w-3xl">
           <CustomTitle title="Nos résultats et références clés" offset={30} />
-          <p className="text-lg font-semibold tracking-[-0.01em] text-[rgba(249,245,236,0.92)]">
+          <p className="mt-4 text-sm leading-relaxed text-(--overlayText) md:text-base">
             Notre méthodologie rigoureuse est validée par des résultats concrets.
           </p>
         </div>

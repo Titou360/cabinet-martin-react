@@ -137,7 +137,7 @@ const PostFinancement = () => {
     >
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:px-8 md:py-20 lg:py-24">
         <CustomTitle title="Post Financement" offset={30} />
-        <p className="text-base sm:text-lg font-semibold tracking-[-0.01em] text[--overlay] max-w-3xl">
+         <p className="mt-4 text-sm leading-relaxed text-(--muted) md:text-base">
           On ne s&apos;arrête pas à l&apos;accord. On sécurise le versement, la
           conformité et on peut continuer à vous accompagner pour la suite de
           votre projet.
@@ -168,8 +168,8 @@ const PostFinancement = () => {
           className="w-full mx-auto flex justify-center mt-10 items-center"
         >
           <GoldButton
-            href="/contactez-nous"
-            text="Contactez-nous pour en savoir plus"
+            href="/partenaires"
+            text="Travaillez avec nous !"
           />
         </div>
       </div>

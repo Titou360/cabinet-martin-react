@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
+import { gsap, ScrollTrigger } from "@/app/lib/gsapClient";
 import * as Accordion from "@radix-ui/react-accordion";
 import { FaChevronDown } from "react-icons/fa";
 import CustomTitle from "../components/ui/CustomTitle/CustomTitle";
@@ -63,8 +63,6 @@ const FAQAccordion = () => {
 
   useGSAP(
     () => {
-      ensureGSAP();
-
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)")
         .matches;
       const section = sectionRef.current;
@@ -200,7 +198,7 @@ const FAQAccordion = () => {
     <section
       id="faq"
       ref={sectionRef}
-      className="border-b relative overflow-hidden bg-(--overlay) text-(--overlayText) min-h-screen"
+      className="border-b border-(--overlayText) relative overflow-hidden bg-(--overlay) text-(--overlayText) min-h-screen"
     >
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:px-8 md:py-20 lg:py-24">
         <CustomTitle title="Questions Fréquentes" offset={30} />
