@@ -6,7 +6,6 @@ import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
 import CustomTitle from "../ui/CustomTitle/CustomTitle";
 
-// Splitting styles (OK si ton projet les accepte ici)
 import "splitting/dist/splitting.css";
 import "splitting/dist/splitting-cells.css";
 
@@ -61,6 +60,7 @@ export default function NosServices() {
       if (!section || !copyEl) return;
 
       let killed = false;
+      const isMobile = window.innerWidth < 768;
 
       const CLIP_SHOW = "inset(0% 0% 0% 0%)";
       const CLIP_HIDE_LEFT = "inset(0% 100% 0% 0%)";
@@ -78,107 +78,192 @@ export default function NosServices() {
         return;
       }
 
-      // ✅ INIT cards immédiatement
-      gsap.set([left1Ref.current, left2Ref.current], {
-        autoAlpha: 0,
-        x: -80,
-        clipPath: CLIP_HIDE_LEFT,
-        willChange: "transform, clip-path, opacity",
-      });
-
-      gsap.set([right1Ref.current, right2Ref.current], {
-        autoAlpha: 0,
-        x: 80,
-        clipPath: CLIP_HIDE_RIGHT,
-        willChange: "transform, clip-path, opacity",
-      });
-
-      // ✅ Timeline + PIN créé TOUT DE SUITE (c’est ça qui évite de casser Banner/Equipe/Footer)
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.out" },
-        scrollTrigger: {
-          id: "services-pin",
-          trigger: section,
-          start: "top top",
-          end: "+=1800",
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          refreshPriority: 10,
-          // markers: true,
-        },
-      });
-
-      // Fenêtres de scroll
-      const TEXT_START = 0.08;
-      const TEXT_WINDOW = 0.95;
-      const CARD_GAP = 0.12;
-      const CARDS_1_AT = TEXT_START + TEXT_WINDOW + CARD_GAP;
-      const PAUSE = 0.12;
-      const CARDS_2_AT = CARDS_1_AT + 0.35 + PAUSE;
-
-      // Cards après le texte
-      tl.to(left1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
-        .to(right1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
-        .to({}, { duration: PAUSE })
-        .to(left2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT)
-        .to(right2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT);
-
-      // ✅ Import dynamique Splitting (SSR-safe)
-      (async () => {
-        const mod = await import("splitting");
-        const Splitting = mod.default;
-        if (killed) return;
-
-        const targets = Array.from(copyEl.querySelectorAll<HTMLElement>("[data-splitting]"));
-        const toSplit = targets.filter((t) => !t.classList.contains("splitting"));
-
-        if (toSplit.length) {
-          Splitting({ target: toSplit, by: "words" });
-        }
-
-        if (killed) return;
-
-        const words = Array.from(copyEl.querySelectorAll<HTMLElement>(".word"));
-        if (!words.length) {
-          // si Splitting ne sort rien, on refresh quand même
-          requestAnimationFrame(() => ScrollTrigger.refresh());
-          return;
-        }
-
-        // init words
-        gsap.set(words, {
-          opacity: 0.15,
-          color: "rgba(249,245,236,0.35)",
-          willChange: "opacity, color",
+      // ✅ MODE DESKTOP/TABLET : Pin + Timeline
+      if (!isMobile) {
+        // INIT cards immédiatement
+        gsap.set([left1Ref.current, left2Ref.current], {
+          autoAlpha: 0,
+          x: -80,
+          clipPath: CLIP_HIDE_LEFT,
+          willChange: "transform, clip-path, opacity",
         });
 
-        // reveal mot par mot (inséré dans la timeline déjà pin)
-        tl.to(
-          words,
-          {
+        gsap.set([right1Ref.current, right2Ref.current], {
+          autoAlpha: 0,
+          x: 80,
+          clipPath: CLIP_HIDE_RIGHT,
+          willChange: "transform, clip-path, opacity",
+        });
+
+        // Timeline + PIN
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.out" },
+          scrollTrigger: {
+            id: "services-pin",
+            trigger: section,
+            start: "top top",
+            end: "+=1800",
+            scrub: true,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            refreshPriority: 10,
+          },
+        });
+
+        // Fenêtres de scroll
+        const TEXT_START = 0.08;
+        const TEXT_WINDOW = 0.95;
+        const CARD_GAP = 0.12;
+        const CARDS_1_AT = TEXT_START + TEXT_WINDOW + CARD_GAP;
+        const PAUSE = 0.12;
+        const CARDS_2_AT = CARDS_1_AT + 0.35 + PAUSE;
+
+        // Cards après le texte
+        tl.to(left1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
+          .to(right1Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_1_AT)
+          .to({}, { duration: PAUSE })
+          .to(left2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT)
+          .to(right2Ref.current, { autoAlpha: 1, x: 0, clipPath: CLIP_SHOW, duration: 0.35 }, CARDS_2_AT);
+
+        // Import dynamique Splitting
+        (async () => {
+          const mod = await import("splitting");
+          const Splitting = mod.default;
+          if (killed) return;
+
+          const targets = Array.from(copyEl.querySelectorAll<HTMLElement>("[data-splitting]"));
+          const toSplit = targets.filter((t) => !t.classList.contains("splitting"));
+
+          if (toSplit.length) {
+            Splitting({ target: toSplit, by: "words" });
+          }
+
+          if (killed) return;
+
+          const words = Array.from(copyEl.querySelectorAll<HTMLElement>(".word"));
+          if (!words.length) {
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+            return;
+          }
+
+          // init words
+          gsap.set(words, {
+            opacity: 0.15,
+            color: "rgba(249,245,236,0.35)",
+            willChange: "opacity, color",
+          });
+
+          // reveal mot par mot (inséré dans la timeline déjà pin)
+          tl.to(
+            words,
+            {
+              opacity: 1,
+              color: "rgba(249,245,236,0.92)",
+              duration: TEXT_WINDOW,
+              ease: "none",
+              stagger: { amount: TEXT_WINDOW, from: "start" },
+            },
+            TEXT_START,
+          );
+
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+        })();
+
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+
+        return () => {
+          killed = true;
+          tl.scrollTrigger?.kill();
+          tl.kill();
+        };
+      }
+
+      // ✅ MODE MOBILE : Animation au scroll sans pin
+      else {
+        // Animation du texte mot par mot
+        (async () => {
+          const mod = await import("splitting");
+          const Splitting = mod.default;
+          if (killed) return;
+
+          const targets = Array.from(copyEl.querySelectorAll<HTMLElement>("[data-splitting]"));
+          const toSplit = targets.filter((t) => !t.classList.contains("splitting"));
+
+          if (toSplit.length) {
+            Splitting({ target: toSplit, by: "words" });
+          }
+
+          if (killed) return;
+
+          const words = Array.from(copyEl.querySelectorAll<HTMLElement>(".word"));
+          if (!words.length) {
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+            return;
+          }
+
+          // init words
+          gsap.set(words, {
+            opacity: 0.15,
+            color: "rgba(249,245,236,0.35)",
+            willChange: "opacity, color",
+          });
+
+          // reveal mot par mot au scroll
+          gsap.to(words, {
             opacity: 1,
             color: "rgba(249,245,236,0.92)",
-            duration: TEXT_WINDOW,
+            duration: 1,
             ease: "none",
-            stagger: { amount: TEXT_WINDOW, from: "start" },
-          },
-          TEXT_START,
-        );
+            stagger: {
+              amount: 1,
+              from: "start",
+            },
+            scrollTrigger: {
+              trigger: copyEl,
+              start: "top 80%",
+              end: "bottom 60%",
+              scrub: true,
+            },
+          });
 
-        // ✅ refresh après split + insertion tween
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+        })();
+
+        // Animation des cards individuellement
+        const cards = [left1Ref.current, right1Ref.current, left2Ref.current, right2Ref.current];
+
+        cards.forEach((card) => {
+          if (!card) return;
+
+          gsap.fromTo(
+            card,
+            {
+              opacity: 0,
+              y: 50,
+            },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 85%",
+                end: "top 65%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
+        });
+
         requestAnimationFrame(() => ScrollTrigger.refresh());
-      })();
 
-      // ✅ refresh après création du pin (super important pour les sections en dessous)
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-
-      return () => {
-        killed = true;
-        tl.scrollTrigger?.kill();
-        tl.kill();
-      };
+        return () => {
+          killed = true;
+          ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        };
+      }
     },
     { scope: sectionRef },
   );
@@ -237,7 +322,7 @@ export default function NosServices() {
             <div ref={left1Ref} className="h-full">
               <ServiceCard
                 badge="01"
-                title="Audit d’éligibilité"
+                title="Audit d'éligibilité"
                 desc="Analyse rapide de votre situation et cadrage des leviers mobilisables (CEE, critères, calendrier)."
               />
             </div>
@@ -256,7 +341,7 @@ export default function NosServices() {
               <ServiceCard
                 badge="03"
                 title="Pilotage & échanges"
-                desc="Coordination, relances, réponses. Vous restez concentré sur l’opérationnel."
+                desc="Coordination, relances, réponses. Vous restez concentré sur l'opérationnel."
               />
             </div>
 

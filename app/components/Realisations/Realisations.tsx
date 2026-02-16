@@ -238,8 +238,8 @@ export default function Realisations() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:px-8 md:py-20">
         {/* Header */}
         <div className="max-w-3xl">
-          <CustomTitle title="Nos résultats et références clés" />
-          <p className="mt-4 text-sm leading-relaxed text-[rgba(249,245,236,0.72)] md:text-base">
+          <CustomTitle title="Nos résultats et références clés" offset={30} />
+          <p className="text-lg font-semibold tracking-[-0.01em] text-[rgba(249,245,236,0.92)]">
             Notre méthodologie rigoureuse est validée par des résultats concrets.
           </p>
         </div>

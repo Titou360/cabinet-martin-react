@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { BlackButton, GoldButton, HeroButton} from "../ui/Buttons/Buttons";
 
 const WORDS = [
   "Subventions CEE",
@@ -45,25 +46,16 @@ export default function HeroSection() {
               </h1>
 
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
-                Audit, montage et pilotage de dossiers. Une approche claire, rapide, et orientée résultat
-                pour sécuriser vos démarches et maximiser vos chances d’aboutir.
+                Audit, montage et pilotage de dossiers. Une approche claire,
+                rapide, et orientée résultat pour sécuriser vos démarches et
+                maximiser vos chances d’aboutir.
               </p>
 
               {/* ✅ CTA responsive (pile en mobile, ligne dès sm) */}
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link
-                  href="/#contact"
-                  className="inline-flex w-full items-center justify-center rounded-full bg-(--color-brand-100) px-5 py-3 text-sm font-semibold text-black/90 shadow-sm transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:w-auto"
-                >
-                  Nous contacter
-                </Link>
+                <GoldButton href="/prendre-rdv" text="Prendre RDV" />
 
-                <Link
-                  href="/#services"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:w-auto"
-                >
-                  Nos services
-                </Link>
+                <HeroButton href="/contactez-nous" text="Nous contacter" />
               </div>
             </div>
 
@@ -114,8 +106,9 @@ export default function HeroSection() {
                 </div>
 
                 <p className="mt-4 text-sm leading-relaxed text-black/70">
-                  Vous restez concentré sur l’opérationnel. Nous structurons le dossier, sécurisons les
-                  pièces, et pilotons les échanges jusqu’à la réussite.
+                  Vous restez concentré sur l’opérationnel. Nous structurons le
+                  dossier, sécurisons les pièces, et pilotons les échanges
+                  jusqu’à la réussite.
                 </p>
 
                 <ul className="mt-5 space-y-2 text-sm text-black/75">
@@ -134,12 +127,7 @@ export default function HeroSection() {
                 </ul>
 
                 <div className="mt-6">
-                  <Link
-                    href="/prendre-rdv"
-                    className="inline-flex w-full items-center justify-center rounded-full border border-black/10 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
-                  >
-                    Prendre RDV
-                  </Link>
+                  <BlackButton href="/prendre-rdv" text="Prendre RDV" />
                 </div>
               </div>
             </div>

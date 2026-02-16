@@ -21,7 +21,7 @@ export default function Banner() {
 
       // ✅ kill uniquement CE banner (évite de casser le reste)
       ScrollTrigger.getById("banner-in")?.kill();
-      gsap.killTweensOf([...reveals, priceRef.current].filter(Boolean) as any);
+      gsap.killTweensOf([...reveals, priceRef.current].filter(Boolean) as HTMLElement[]);
 
       // ✅ Reduced motion: tout visible
       if (reduce) {

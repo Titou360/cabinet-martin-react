@@ -7,10 +7,8 @@ import Image from "next/image";
 
 import { gsap, ensureGSAP } from "@/app/lib/gsapClient";
 
-import { FaFacebookF } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
-import { FaLinkedinIn } from "react-icons/fa";
-import { FaGoogle } from "react-icons/fa";
+import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import SocialBar from "../ui/SocialBar/SocialBar";
 
 type NavItem = { n: string; label: string; href: string };
 
@@ -33,29 +31,27 @@ const NAV: NavItem[] = [
   { n: "01", label: "Accueil", href: "/#top" },
   { n: "02", label: "Services", href: "/#services" },
   { n: "03", label: "Réalisations", href: "/#realisations" },
-  { n: "04", label: "Contact", href: "/#contact" },
-  { n: "05", label: "F.A.Q", href: "/faq" },
-  { n: "06", label: "Ressources", href: "/ressources" },
+  { n: "04", label: "Prendre RDV", href: "/prendre-rdv" },
+  { n: "05", label: "Contact", href: "/contactez-nous" },
+  { n: "06", label: "F.A.Q", href: "/faq" },
+  { n: "07", label: "Ressources", href: "/ressources" },
 ];
 
 export default function Header() {
   const scopeRef = useRef<HTMLDivElement | null>(null);
-
   const headerRef = useRef<HTMLElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-
   const brandRef = useRef<HTMLAnchorElement | null>(null);
   const toggleTopRef = useRef<HTMLButtonElement | null>(null);
-
   const burgerBtnRef = useRef<HTMLButtonElement | null>(null);
   const burgerTopRef = useRef<HTMLSpanElement | null>(null);
   const burgerMidRef = useRef<HTMLSpanElement | null>(null);
   const burgerBotRef = useRef<HTMLSpanElement | null>(null);
-
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+
 
   // Theme init
   useEffect(() => {
@@ -94,6 +90,11 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen]);
 
+  useEffect(() => {
+  // enlève le verrou SSR dès que le composant est monté
+  overlayRef.current?.removeAttribute("data-ssr");
+}, []);
+
   // ✅ Press animation (premium tap)
   const pressBurger = () => {
     const btn = burgerBtnRef.current;
@@ -113,10 +114,12 @@ export default function Header() {
     setIsOpen((v) => !v);
   };
 
+
   // GSAP timeline
   useGSAP(
     () => {
       ensureGSAP();
+
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
@@ -200,6 +203,7 @@ export default function Header() {
         0.32,
       );
 
+      tlRef.current?.kill();
       tlRef.current = tl;
     },
     { scope: scopeRef },
@@ -230,16 +234,14 @@ export default function Header() {
           isOpen ? "pointer-events-none" : "pointer-events-auto",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           {/* Logo */}
           <Link
             ref={brandRef}
             href="/"
             className="flex min-w-0 items-center gap-2 pointer-events-auto"
           >
-            <span
-              className="inline-flex size-18 shrink-0 items-center justify-center bg-[rgba(27,42,71,0.08)]"
-            >
+            <span className="inline-flex size-18 shrink-0 items-center justify-center">
               <Image
                 src="/img/logo/logo-cabinet-martin-ma-128x128.png"
                 className="object-contain"
@@ -259,10 +261,10 @@ export default function Header() {
               ref={toggleTopRef}
               type="button"
               onClick={toggleTheme}
-              className="hidden rounded-full border border-[rgba(27,42,71,0.18)] px-3 py-2 text-xs font-semibold text-[rgba(27,42,71,0.85)] hover:border-[rgba(27,42,71,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg) sm:inline-flex pointer-events-auto"
+              className="hidden size-11 items-center justify-center rounded-full border border-[rgba(27,42,71,0.18)] px-3 py-3 text-xs font-semibold text-[rgba(27,42,71,0.85)] hover:border-[rgba(27,42,71,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg) sm:inline-flex pointer-events-auto"
               aria-pressed={theme === "dark"}
             >
-              {theme === "dark" ? "Dark" : "Light"}
+              {theme === "dark" ? <IoMoonOutline className="size-6" /> : <IoSunnyOutline className="size-6" />}
             </button>
 
             {/* Burger: reste visible + cliquable */}
@@ -301,12 +303,18 @@ export default function Header() {
       </header>
 
       {/* OVERLAY: derrière le header */}
+
       <div
         ref={overlayRef}
         id="fullmenu"
+        data-ssr="1"
         aria-hidden={!isOpen}
-        className="fixed inset-0 z-90 overflow-y-auto bg-(--color-brand-900) text-(--overlayText)"
-      >
+  className={[
+    "fixed inset-0 z-90 overflow-y-auto bg-(--color-brand-900) text-(--overlayText)",
+    // ✅ caché côté SSR (évite le flash)
+    "data-ssr:invisible data-ssr:opacity-0 data-ssr:pointer-events-none",
+  ].join(" ")}
+>
         <div className="mx-auto grid min-h-full max-w-7xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2 md:gap-0 md:px-6">
           {/* MENU */}
           <div className="min-w-0 md:border-l md:border-[rgba(249,245,236,0.25)] md:pl-10">
@@ -338,10 +346,10 @@ export default function Header() {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="inline-flex rounded-full border border-[rgba(249,245,236,0.22)] px-3 py-2 text-xs font-semibold text-[rgba(249,245,236,0.85)] hover:border-[rgba(249,245,236,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
+                className="inline-flex items-center justify-center rounded-full border border-[rgba(249,245,236,0.22)] px-3 py-2 text-xs font-semibold text-[rgba(249,245,236,0.85)] hover:border-[rgba(249,245,236,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
                 aria-pressed={theme === "dark"}
               >
-                {theme === "dark" ? "Dark" : "Light"}
+                {theme === "dark" ?  <IoMoonOutline className="size-6" /> : <IoSunnyOutline className="size-6" />}
               </button>
             </div>
           </div>
@@ -369,48 +377,15 @@ export default function Header() {
                 <PhoneLink number="+33624702462" display="06 24 70 24 62" />
               </p>
 
-              {/* ✅ Réseaux sociaux = vrais liens */}
-              <div className="mt-3 flex flex-row items-center gap-4 text-xl text-[rgba(249,245,236,0.70)] md:justify-end">
-                <a
-                  href="#"
-                  aria-label="Facebook"
-                  rel="noopener noreferrer"
-                  className="hover:text-(--color-brand-100)"
-                >
-                  <FaFacebookF />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  aria-label="Instagram"
-                  rel="noopener noreferrer"
-                  className="hover:text-(--color-brand-100)"
-                >
-                  <FaInstagram />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  aria-label="LinkedIn"
-                  rel="noopener noreferrer"
-                  className="hover:text-(--color-brand-100)"
-                >
-                  <FaLinkedinIn />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  aria-label="Google"
-                  rel="noopener noreferrer"
-                  className="hover:text-(--color-brand-100)"
-                >
-                  <FaGoogle />
-                </a>
-              </div>
+              {/* ✅ Réseaux sociaux */}
+               <SocialBar align="right" />
+             
             </div>
           </div>
         </div>
       </div>
     </div>
+              
+              
   );
 }

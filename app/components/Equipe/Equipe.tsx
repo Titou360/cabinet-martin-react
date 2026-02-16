@@ -190,7 +190,7 @@ export default function Equipe() {
     <section id="equipe" className="bg-(--bg) text-(--text)">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 md:px-8 md:py-20">
         <div className="max-w-2xl">
-          <CustomTitle title="Les associés" />
+          <CustomTitle title="Les associés" offset={30} />
           <p className="mt-4 text-sm leading-relaxed text-(--muted) md:text-base">
             Une équipe resserrée, un pilotage clair et un accompagnement orienté résultat.
           </p>
