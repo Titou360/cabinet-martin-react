@@ -10,6 +10,9 @@ import Footer from "./components/Footer/Footer";
 import SmoothScroll from "./providers/SmoothScroll";
 import GSAPProvider from "./providers/GSAPProvider";
 import CookieConsentProvider from "./providers/CookieConsentProvider";
+import JsonLd from "./components/JsonLd/JsonLd";
+import { buildOrganizationSchema, buildWebSiteSchema } from "./lib/schemas";
+import Breadcrumb from "./components/Breadcrumb/Breadcrumb";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,35 +24,88 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = "https://www.cabinetmartin-ma.fr"; // TODO : confirmer l'URL définitive
+
 export const metadata: Metadata = {
-  title: "Cabinet Martin M&A - Expert en financement et subventions",
+  metadataBase: new URL(BASE_URL),
+
+  title: {
+    default: "Cabinet Martin M&A — Expert en subventions CEE",
+    template: "%s — Cabinet Martin M&A",
+  },
   description:
-    "Cabinet Martin M&A vous accompagne dans l'obtention de subventions, financements publics et privés. Experts en CEE, crédits d'impôt et dossiers de financement pour TPE, PME, associations et collectivités.",
+    "Cabinet de conseil spécialisé dans l'obtention de subventions et CEE. Audit d'éligibilité, montage de dossier, pilotage jusqu'au versement. Paiement à la réussite. France entière.",
+
+  // ── Indexation ──────────────────────────────────────────────────────────────
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+
+  // ── Auteur / éditeur ────────────────────────────────────────────────────────
+  authors: [
+    { name: "Mylène Martin",    url: BASE_URL },
+    { name: "Alexandre Martin", url: BASE_URL },
+  ],
+  creator:   "Cabinet Martin M&A",
+  publisher: "Cabinet Martin M&A",
+
+  // ── Langue & localisation ───────────────────────────────────────────────────
+  alternates: {
+    canonical: BASE_URL,
+    languages: { "fr-FR": BASE_URL },
+  },
+
+  // ── Open Graph ──────────────────────────────────────────────────────────────
   openGraph: {
-    title: "Cabinet Martin M&A - Expert en financement et subventions",
-    description:
-      "Accompagnement sur-mesure pour l'obtention de subventions européennes, nationales et régionales, CEE, crédits d'impôt et prêts bonifiés.",
-    url: "https://www.cabinet-martin-ma.fr",
-    siteName: "Cabinet Martin M&A",
-    locale: "fr_FR",
-    type: "website",
+    type:        "website",
+    locale:      "fr_FR",
+    url:         BASE_URL,
+    siteName:    "Cabinet Martin M&A",
+    title:       "Cabinet Martin M&A — Expert en subventions CEE",
+    description: "Audit, montage et pilotage de dossiers CEE. Paiement à la réussite. Nous nous occupons de toute la complexité administrative pendant que vous pilotez votre projet.",
     images: [
       {
-        url: "https://www.cabinet-martin-ma.fr/img/logo/logo-cabinet-martin-ma-512x512.png",
-        width: 512,
-        height: 512,
-        alt: "Logo Cabinet Martin M&A",
+        url:    "/opengraph-image",   // image générée par app/opengraph-image.tsx
+        width:  1200,
+        height: 630,
+        alt:    "Cabinet Martin M&A — Expert en financement et subventions CEE",
+        type:   "image/png",
       },
     ],
   },
+
+  // ── Twitter / X ─────────────────────────────────────────────────────────────
   twitter: {
-    card: "summary",
-    title: "Cabinet Martin M&A - Expert en financement et subventions",
-    description:
-      "Accompagnement sur-mesure pour l'obtention de subventions et financements publics pour TPE, PME et associations.",
-    images: ["https://www.cabinet-martin-ma.fr/img/logo/logo-cabinet-martin-ma-512x512.png"],
+    card:        "summary_large_image",
+    site:        "@CabinetMartinMA", // TODO : handle Twitter/X si applicable
+    creator:     "@CabinetMartinMA", // TODO
+    title:       "Cabinet Martin M&A — Expert en subventions CEE",
+    description: "Audit, montage et pilotage de dossiers CEE. Paiement à la réussite. France entière.",
+    images: [
+      {
+        url:    "/opengraph-image",
+        width:  1200,
+        height: 630,
+        alt:    "Cabinet Martin M&A — Expert en financement et subventions CEE",
+      },
+    ],
   },
-  metadataBase: new URL("https://www.cabinet-martin-ma.fr"),
+
+  // ── Icônes ──────────────────────────────────────────────────────────────────
+  icons: {
+    icon: [
+      { url: "/img/logo/logo-cabinet-martin-ma-128x128.png", sizes: "128x128", type: "image/png" },
+      { url: "/img/logo/logo-cabinet-martin-ma-256x256.png", sizes: "256x256", type: "image/png" },
+    ],
+    apple:   "/img/logo/logo-cabinet-martin-ma-256x256.png",
+    shortcut:"/img/logo/logo-cabinet-martin-ma-128x128.png",
+  },
+
+  // ── Manifest / couleur ──────────────────────────────────────────────────────
+  // manifest: "/manifest.json", // TODO : à créer si PWA souhaitée
+  // themeColor: "#1B2A47",      // TODO : à décommenter quand confirmé
 };
 
 
@@ -62,6 +118,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <JsonLd schema={[buildOrganizationSchema(), buildWebSiteSchema()]} />
+      </head>
       <body
         className={`${fontPrimary.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -69,6 +128,7 @@ export default function RootLayout({
         <GSAPProvider />
         <CookieConsentProvider />
         <Header />
+        <Breadcrumb />
         {children}
         <Footer />
       </body>

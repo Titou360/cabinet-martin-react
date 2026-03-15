@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import { useIsDark } from "../hooks/useIsDark";
+import JsonLd from "../components/JsonLd/JsonLd";
+import { buildFAQSchema, buildBreadcrumbSchema, buildWebPageSchema } from "../lib/schemas";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/app/lib/gsapClient";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -189,6 +191,12 @@ const FAQAccordion = () => {
   );
 
   return (
+    <>
+    <JsonLd schema={[
+      buildFAQSchema(),
+      buildWebPageSchema({ title: "FAQ — Cabinet Martin M&A", description: "Questions fréquentes sur nos services d'accompagnement au financement et aux subventions CEE.", path: "/faq" }),
+      buildBreadcrumbSchema([{ name: "Accueil", href: "/" }, { name: "FAQ", href: "/faq" }]),
+    ]} />
     <section
       id="faq"
       ref={sectionRef}
@@ -261,6 +269,7 @@ const FAQAccordion = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
