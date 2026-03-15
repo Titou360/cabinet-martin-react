@@ -201,7 +201,7 @@ const FAQAccordion = () => {
       className="border-b border-(--overlayText) relative overflow-hidden bg-(--overlay) text-(--overlayText) min-h-screen"
     >
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:px-8 md:py-20 lg:py-24">
-        <CustomTitle title="Questions Fréquentes" offset={30} />
+        <CustomTitle title="Questions Fréquentes" offset={30} as="h1" />
 
         <div ref={introRef}>
           <p

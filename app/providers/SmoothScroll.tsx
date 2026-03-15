@@ -19,10 +19,18 @@ export default function SmoothScroll() {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
+    // Pause/resume depuis n'importe quel composant (ex: Header menu ouvert)
+    const onPause = () => lenis.stop();
+    const onResume = () => lenis.start();
+    window.addEventListener("lenis:pause", onPause);
+    window.addEventListener("lenis:resume", onResume);
+
     // Refresh utile quand images/fonts/split modifient les hauteurs
     requestAnimationFrame(() => ScrollTrigger.refresh());
 
     return () => {
+      window.removeEventListener("lenis:pause", onPause);
+      window.removeEventListener("lenis:resume", onResume);
       gsap.ticker.remove(raf);
       lenis.destroy();
     };

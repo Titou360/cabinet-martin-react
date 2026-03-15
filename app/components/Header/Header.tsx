@@ -29,12 +29,12 @@ const PhoneLink = ({
 
 const NAV: NavItem[] = [
   { n: "01", label: "Accueil", href: "/#top" },
-  { n: "02", label: "Services", href: "/#services" },
-  { n: "03", label: "Réalisations", href: "/#realisations" },
+  { n: "02", label: "Nos Services", href: "/#services" },
+  { n: "03", label: "Résultats et références", href: "/#realisations" },
   { n: "04", label: "Prendre RDV", href: "/prendre-rdv" },
-  { n: "05", label: "Contact", href: "/contactez-nous" },
-  { n: "06", label: "F.A.Q", href: "/faq" },
-  { n: "07", label: "Ressources", href: "/ressources" },
+  { n: "05", label: "Devenir partenaires", href: "/partenaires" },
+  { n: "06", label: "Foire Aux Questions", href: "/faq" },
+  { n: "07", label: "Contactez-nous", href: "/contactez-nous" },
 ];
 
 export default function Header() {
@@ -51,7 +51,6 @@ export default function Header() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-
 
   // Theme init
   useEffect(() => {
@@ -72,11 +71,18 @@ export default function Header() {
     setTheme(next);
   };
 
-  // Lock scroll when open
+  // Lock scroll when open (body + Lenis)
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      window.dispatchEvent(new CustomEvent("lenis:pause"));
+    } else {
+      document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent("lenis:resume"));
+    }
     return () => {
       document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent("lenis:resume"));
     };
   }, [isOpen]);
 
@@ -91,9 +97,9 @@ export default function Header() {
   }, [isOpen]);
 
   useEffect(() => {
-  // enlève le verrou SSR dès que le composant est monté
-  overlayRef.current?.removeAttribute("data-ssr");
-}, []);
+    // enlève le verrou SSR dès que le composant est monté
+    overlayRef.current?.removeAttribute("data-ssr");
+  }, []);
 
   // ✅ Press animation (premium tap)
   const pressBurger = () => {
@@ -113,7 +119,6 @@ export default function Header() {
     pressBurger();
     setIsOpen((v) => !v);
   };
-
 
   // GSAP timeline
   useGSAP(
@@ -264,7 +269,11 @@ export default function Header() {
               className="hidden size-11 items-center justify-center rounded-full border border-[rgba(27,42,71,0.18)] px-3 py-3 text-xs font-semibold text-[rgba(27,42,71,0.85)] hover:border-[rgba(27,42,71,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg) sm:inline-flex pointer-events-auto"
               aria-pressed={theme === "dark"}
             >
-              {theme === "dark" ? <IoMoonOutline className="size-6" /> : <IoSunnyOutline className="size-6" />}
+              {theme === "dark" ? (
+                <IoMoonOutline className="size-6" />
+              ) : (
+                <IoSunnyOutline className="size-6" />
+              )}
             </button>
 
             {/* Burger: reste visible + cliquable */}
@@ -309,12 +318,12 @@ export default function Header() {
         id="fullmenu"
         data-ssr="1"
         aria-hidden={!isOpen}
-  className={[
-    "fixed inset-0 z-90 overflow-y-auto bg-(--color-brand-900) text-(--overlayText)",
-    // ✅ caché côté SSR (évite le flash)
-    "data-ssr:invisible data-ssr:opacity-0 data-ssr:pointer-events-none",
-  ].join(" ")}
->
+        className={[
+          "fixed inset-0 z-90 overflow-y-auto bg-(--color-brand-900) text-(--overlayText)",
+          // ✅ caché côté SSR (évite le flash)
+          "data-ssr:invisible data-ssr:opacity-0 data-ssr:pointer-events-none",
+        ].join(" ")}
+      >
         <div className="mx-auto grid min-h-full max-w-7xl grid-cols-1 gap-10 px-4 py-10 md:grid-cols-2 md:gap-0 md:px-6">
           {/* MENU */}
           <div className="min-w-0 md:border-l md:border-[rgba(249,245,236,0.25)] md:pl-10">
@@ -332,7 +341,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       onClick={onNavClick}
-                      className="menu-label mt-2 inline-block max-w-full wrap-break-word text-[clamp(2rem,6vw,3.6rem)] leading-[1.02] tracking-[-0.01em] text-[rgba(249,245,236,0.92)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
+                      className="menu-label mt-2 inline-block max-w-full wrap-break-word text-[clamp(1.4rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.01em] text-[rgba(249,245,236,0.92)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
                     >
                       {item.label}
                     </Link>
@@ -349,7 +358,11 @@ export default function Header() {
                 className="inline-flex items-center justify-center rounded-full border border-[rgba(249,245,236,0.22)] px-3 py-2 text-xs font-semibold text-[rgba(249,245,236,0.85)] hover:border-[rgba(249,245,236,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
                 aria-pressed={theme === "dark"}
               >
-                {theme === "dark" ?  <IoMoonOutline className="size-6" /> : <IoSunnyOutline className="size-6" />}
+                {theme === "dark" ? (
+                  <IoMoonOutline className="size-6" />
+                ) : (
+                  <IoSunnyOutline className="size-6" />
+                )}
               </button>
             </div>
           </div>
@@ -378,14 +391,11 @@ export default function Header() {
               </p>
 
               {/* ✅ Réseaux sociaux */}
-               <SocialBar align="right" />
-             
+              <SocialBar align="right" />
             </div>
           </div>
         </div>
       </div>
     </div>
-              
-              
   );
 }

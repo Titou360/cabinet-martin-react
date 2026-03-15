@@ -24,7 +24,7 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #0f172a;
+  --bg: var(--color-brand-300);
   --text: var(--color-brand-50);
   --header: rgba(249, 245, 236, 0.86);
   --overlay: var(--color-brand-900);
@@ -51,7 +51,7 @@ body {
   font-weight: 100;
   font-style: normal;
   letter-spacing: -0.01em;
-  font-size: clamp(2.2rem, 3.6vw, 4rem);
+  font-size: clamp(1.4rem, 3.5vw, 2.6rem);
   line-height: 0.95;
   color: var(--color-brand-300);
 }
@@ -167,6 +167,10 @@ body {
   .ticker__track {
     animation: none;
     transform: none;
+  }
+
+  .menu-dash {
+    transition: none;
   }
 }
 

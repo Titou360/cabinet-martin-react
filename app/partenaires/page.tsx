@@ -424,7 +424,7 @@ const TravaillezAvecNous = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
             <GoldButton
-              href="/prendre-rendez-vous"
+              href="/prendre-rdv"
               text="Échanger 30 min"
             />
             <motion.a

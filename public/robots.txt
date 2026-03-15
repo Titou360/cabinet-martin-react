@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.cabinet-martin-ma.fr/sitemap.xml

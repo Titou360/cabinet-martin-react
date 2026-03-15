@@ -9,6 +9,7 @@ type CustomTitleProps = {
   className?: string;
   parallax?: boolean;
   offset?: number;
+  as?: "h1" | "h2" | "h3";
 };
 
 export default function CustomTitle({
@@ -16,6 +17,7 @@ export default function CustomTitle({
   className = "",
   parallax = true,
   offset = 22,
+  as: Tag = "h2",
 }: CustomTitleProps) {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
@@ -59,7 +61,7 @@ export default function CustomTitle({
   );
 
   return (
-    <h2
+    <Tag
       ref={titleRef}
       className={[
         "text-3xl font-semibold tracking-tight md:text-5xl text-overlayText",
@@ -68,6 +70,6 @@ export default function CustomTitle({
       style={{ fontFamily: "var(--font-primary), sans-serif" }}
     >
       {title}
-    </h2>
+    </Tag>
   );
 }
