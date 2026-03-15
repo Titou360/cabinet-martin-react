@@ -4,6 +4,7 @@ import Cal, { getCalApi } from "@calcom/embed-react";
 import { useEffect, useState } from "react";
 import CustomTitle from "../components/ui/CustomTitle/CustomTitle";
 import Link from "next/link";
+import { useIsDark } from "../hooks/useIsDark";
 
 const CAL_LINK =
   process.env.NEXT_PUBLIC_CALCOM_LINK ??
@@ -11,25 +12,8 @@ const CAL_LINK =
 
 function PrendreRdv() {
   const [calError, setCalError] = useState(false);
-  const [calTheme, setCalTheme] = useState<"light" | "dark">("light");
-
-  // Détecte le thème courant du site (attribut data-theme sur <html>)
-  useEffect(() => {
-    const getTheme = (): "light" | "dark" =>
-      document.documentElement.getAttribute("data-theme") === "dark"
-        ? "dark"
-        : "light";
-
-    setCalTheme(getTheme());
-
-    const observer = new MutationObserver(() => setCalTheme(getTheme()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const isDarkRaw = useIsDark();
+  const calTheme: "light" | "dark" = isDarkRaw ? "dark" : "light";
 
   // Réinitialise l'UI Cal.com quand le thème change
   useEffect(() => {

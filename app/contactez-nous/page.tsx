@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
+import { useIsDark } from "../hooks/useIsDark";
 import { motion } from "motion/react";
 import { useGSAP } from "@gsap/react";
 import CustomTitle from '../components/ui/CustomTitle/CustomTitle';
@@ -32,22 +33,7 @@ export default function ContactPage() {
   });
   const [status, setStatus] = useState<Status>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  // Suit le thème du site en temps réel
-  useEffect(() => {
-    const getTheme = () =>
-      document.documentElement.getAttribute("data-theme") === "dark";
-
-    setIsDark(getTheme());
-
-    const observer = new MutationObserver(() => setIsDark(getTheme()));
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
+  const isDark = useIsDark();
 
   useGSAP(
     () => {

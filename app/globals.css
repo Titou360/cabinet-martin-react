@@ -174,6 +174,21 @@ body {
   }
 }
 
+@theme {
+  --animate-slideDown: slideDown 0.25s ease-out;
+  --animate-slideUp: slideUp 0.22s ease-out;
+}
+
+@keyframes slideDown {
+  from { height: 0; }
+  to   { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes slideUp {
+  from { height: var(--radix-accordion-content-height); }
+  to   { height: 0; }
+}
+
 @keyframes ticker-x {
   from {
     transform: translate3d(0, 0, 0);
@@ -183,5 +198,53 @@ body {
   } /* 2 groupes identiques */
 }
 
-/* 
+/* ─── Cookie Consent (vanilla-cookieconsent v3) ────────────────────────────── */
+#cc-main {
+  --cc-font-family: var(--font-primary), system-ui, sans-serif;
+  --cc-modal-border-radius: 1rem;
+  --cc-btn-border-radius: 0.5rem;
+
+  /* Couleurs brand */
+  --cc-bg:                              #f9f5ec;
+  --cc-primary-color:                   #1b2a47;
+  --cc-secondary-color:                 rgba(27,42,71,0.6);
+
+  /* Bouton principal — Accept all (gold) */
+  --cc-btn-primary-bg:                  #ae894a;
+  --cc-btn-primary-text:                #ffffff;
+  --cc-btn-primary-hover-bg:            #9a7840;
+  --cc-btn-primary-border-color:        #ae894a;
+  --cc-btn-primary-hover-border-color:  #9a7840;
+
+  /* Bouton secondaire — Refuser */
+  --cc-btn-secondary-bg:                rgba(27,42,71,0.06);
+  --cc-btn-secondary-text:              #1b2a47;
+  --cc-btn-secondary-hover-bg:          rgba(27,42,71,0.12);
+  --cc-btn-secondary-border-color:      rgba(27,42,71,0.18);
+  --cc-btn-secondary-hover-border-color:rgba(27,42,71,0.28);
+
+  /* Toggle */
+  --cc-toggle-on-bg:                    #ae894a;
+  --cc-toggle-off-bg:                   rgba(27,42,71,0.2);
+  --cc-toggle-on-knob-bg:               #ffffff;
+  --cc-toggle-readonly-bg:              rgba(27,42,71,0.12);
+
+  /* Blocs catégories */
+  --cc-cookie-category-block-bg:        rgba(27,42,71,0.03);
+  --cc-cookie-category-block-border:    rgba(27,42,71,0.1);
+  --cc-cookie-category-block-hover-bg:  rgba(27,42,71,0.06);
+
+  /* Séparateurs & overlay */
+  --cc-separator-border-color:          rgba(27,42,71,0.1);
+  --cc-overlay-bg:                      rgba(27,42,71,0.55);
+  --cc-footer-border-top-color:         rgba(27,42,71,0.1);
+
+  /* Liens */
+  --cc-link-color:                      #ae894a;
+  --cc-link-hover-color:                #9a7840;
+
+  --cc-z-index: 9999;
+}
+
+/*
 * { outline: 1px solid rgba(255,0,0,.15); } */

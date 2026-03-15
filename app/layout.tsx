@@ -9,6 +9,7 @@ import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import SmoothScroll from "./providers/SmoothScroll";
 import GSAPProvider from "./providers/GSAPProvider";
+import CookieConsentProvider from "./providers/CookieConsentProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ export default function RootLayout({
       >
         <SmoothScroll />
         <GSAPProvider />
+        <CookieConsentProvider />
         <Header />
         {children}
         <Footer />

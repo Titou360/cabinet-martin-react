@@ -178,18 +178,6 @@ export default function Header() {
         0,
       );
 
-      // Header devient “invisible” mais reste au-dessus (pour la croix)
-      tl.to(
-        headerRef.current,
-        {
-          backgroundColor: "rgba(0,0,0,0)",
-          borderBottomColor: "rgba(0,0,0,0)",
-          backdropFilter: "blur(0px)",
-          duration: reduce ? 0 : 0.16,
-        },
-        0,
-      );
-
       // Overlay descend (derrière le header)
       tl.to(
         overlay,
@@ -235,11 +223,15 @@ export default function Header() {
       <header
         ref={headerRef}
         className={[
-          "sticky top-0 z-100 border-b border-[rgba(27,42,71,0.12)] bg-(--header) backdrop-blur",
-          isOpen ? "pointer-events-none" : "pointer-events-auto",
+          "sticky top-0 z-100 border-b transition-colors duration-300",
+          isOpen
+            ? "border-transparent bg-transparent backdrop-blur-none pointer-events-none"
+            : theme === "dark"
+              ? "border-[rgba(249,245,236,0.08)] bg-[rgba(27,42,71,0.92)] backdrop-blur pointer-events-auto"
+              : "border-[rgba(27,42,71,0.12)] bg-(--header) backdrop-blur pointer-events-auto",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4">
           {/* Logo */}
           <Link
             ref={brandRef}
@@ -250,12 +242,15 @@ export default function Header() {
               <Image
                 src="/img/logo/logo-cabinet-martin-ma-128x128.png"
                 className="object-contain"
-                width={64}
-                height={64}
+                width={72}
+                height={72}
                 alt="Logo Cabinet Martin M&A"
               />
             </span>
-            <span className="truncate text-sm font-semibold tracking-wide text-(--color-brand-200)">
+            <span className={[
+              "truncate text-sm font-semibold tracking-wide transition-colors duration-300",
+              theme === "dark" ? "text-(--overlayText)" : "text-(--color-brand-200)",
+            ].join(" ")}>
               Cabinet Martin M&amp;A
             </span>
           </Link>
@@ -266,7 +261,12 @@ export default function Header() {
               ref={toggleTopRef}
               type="button"
               onClick={toggleTheme}
-              className="hidden size-11 items-center justify-center rounded-full border border-[rgba(27,42,71,0.18)] px-3 py-3 text-xs font-semibold text-[rgba(27,42,71,0.85)] hover:border-[rgba(27,42,71,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg) sm:inline-flex pointer-events-auto"
+              className={[
+                "hidden size-11 items-center justify-center rounded-full border px-3 py-3 text-xs font-semibold transition-colors duration-300 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 sm:inline-flex pointer-events-auto",
+                theme === "dark"
+                  ? "border-[rgba(249,245,236,0.22)] text-(--overlayText) focus-visible:ring-offset-[rgba(27,42,71,1)]"
+                  : "border-[rgba(27,42,71,0.18)] text-[rgba(27,42,71,0.85)] focus-visible:ring-offset-(--bg)",
+              ].join(" ")}
               aria-pressed={theme === "dark"}
             >
               {theme === "dark" ? (
@@ -282,10 +282,12 @@ export default function Header() {
               type="button"
               onClick={onBurgerClick}
               className={[
-                "relative inline-flex size-11 items-center justify-center rounded-full border transition pointer-events-auto",
+                "relative inline-flex size-11 items-center justify-center rounded-full border transition-colors duration-300 pointer-events-auto",
                 isOpen
                   ? "border-white/40 text-white"
-                  : "border-[rgba(27,42,71,0.18)] text-(--color-brand-200) hover:border-[rgba(27,42,71,0.28)]",
+                  : theme === "dark"
+                    ? "border-[rgba(249,245,236,0.22)] text-(--overlayText) hover:border-[rgba(249,245,236,0.45)]"
+                    : "border-[rgba(27,42,71,0.18)] text-(--color-brand-200) hover:border-[rgba(27,42,71,0.28)]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg)",
               ].join(" ")}
               aria-expanded={isOpen}

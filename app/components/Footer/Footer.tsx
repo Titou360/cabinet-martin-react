@@ -84,12 +84,12 @@ export default function Footer() {
         >
           <div className="max-w-xl">
             <div className="flex items-center gap-3">
-              <span className="inline-flex size-18 shrink-0 items-center justify-center bg-[rgba(27,42,71,0.08)]">
+              <span className="inline-flex size-20 shrink-0 items-center justify-center bg-[rgba(27,42,71,0.08)] rounded-xl">
                 <Image
-                  src="/img/logo/logo-cabinet-martin-ma-128x128.png"
+                  src="/img/logo/logo-cabinet-martin-ma-256x256.png"
                   className="object-contain"
-                  width={64}
-                  height={64}
+                  width={80}
+                  height={80}
                   alt="Logo Cabinet Martin M&A"
                 />
               </span>
