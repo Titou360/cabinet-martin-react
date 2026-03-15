@@ -303,134 +303,138 @@ function ArticleModal({
   }, [onClose]);
 
   return (
-    <AnimatePresence>
-      {/* Overlay */}
-      <motion.div
-        className="fixed inset-0 z-200 flex items-center justify-center p-4 sm:p-6 md:p-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        style={{ background: t.overlayBg, backdropFilter: "blur(4px)" }}
-        onClick={onClose}
-      >
-        {/* Panel */}
+    <>
+      {/* Overlay + Panel */}
+      <AnimatePresence>
         <motion.div
-          className="relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl shadow-2xl"
-          style={{ background: t.modalBg, border: `1px solid ${t.modalBorder}` }}
-          initial={{ opacity: 0, scale: 0.97, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.97, y: 16 }}
-          transition={{ type: "spring", stiffness: 340, damping: 28 }}
-          onClick={(e) => e.stopPropagation()}
+          key="article-modal"
+          className="fixed inset-0 z-200 flex items-center justify-center p-4 sm:p-6 md:p-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          style={{ background: t.overlayBg, backdropFilter: "blur(4px)" }}
+          onClick={onClose}
         >
-          {/* Image + bouton fermer superposés */}
-          <div
-            className="relative h-52 sm:h-64 shrink-0 overflow-hidden cursor-zoom-in"
-            onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
-            title="Voir en plein écran"
+          {/* Panel */}
+          <motion.div
+            className="relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl shadow-2xl"
+            style={{ background: t.modalBg, border: `1px solid ${t.modalBorder}` }}
+            initial={{ opacity: 0, scale: 0.97, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 16 }}
+            transition={{ type: "spring", stiffness: 340, damping: 28 }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={article.image}
-              alt={article.imageAlt}
-              fill
-              className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-              sizes="(max-width: 768px) 100vw, 672px"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
-
-            {/* Badge catégorie */}
-            <span
-              className="absolute bottom-4 left-5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm"
-              style={{ background: "rgba(174,137,74,0.85)", color: "#fff" }}
-            >
-              {article.category}
-            </span>
-
-            {/* Bouton fermer — par-dessus la photo, toujours visible */}
-            <button
-              onClick={(e) => { e.stopPropagation(); onClose(); }}
-              aria-label="Fermer l'article"
-              className="absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-sm transition-all duration-200 hover:bg-black/60 hover:border-white/60"
-            >
-              <IoClose className="text-lg" />
-            </button>
-          </div>
-
-          {/* Contenu scrollable — data-lenis-prevent empêche Lenis d'intercepter les events ici */}
-          <div ref={scrollRef} data-lenis-prevent className="overflow-y-auto flex-1 px-6 sm:px-8 py-6">
-            {/* Meta */}
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.date}</span>
-              <span style={{ color: t.muted }}>·</span>
-              <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.readTime} de lecture</span>
-            </div>
-
-            {/* Titre */}
-            <h2
-              className="text-2xl sm:text-3xl font-semibold leading-tight tracking-[-0.02em] mb-3"
-              style={{ color: t.text }}
-            >
-              {article.title}
-            </h2>
-            <p
-              className="text-base leading-relaxed mb-6 pb-6 border-b"
-              style={{ color: t.muted, borderColor: t.modalBorder }}
-            >
-              {article.subtitle}
-            </p>
-
-            {/* Corps de l'article */}
+            {/* Image + bouton fermer superposés */}
             <div
-              className="article-body text-sm sm:text-base leading-relaxed space-y-4"
-              style={{ color: t.muted }}
+              className="relative h-52 sm:h-64 shrink-0 overflow-hidden cursor-zoom-in"
+              onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+              title="Voir en plein écran"
             >
-              {article.body}
-            </div>
+              <Image
+                src={article.image}
+                alt={article.imageAlt}
+                fill
+                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                sizes="(max-width: 768px) 100vw, 672px"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
 
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t" style={{ borderColor: t.modalBorder }}>
-              {article.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
-                  style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            {/* Lien LinkedIn */}
-            {article.linkedinUrl && !article.linkedinUrl.startsWith("TODO") && (
-              <a
-                href={article.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:border-[#0077b5] hover:text-[#0077b5]"
-                style={{ borderColor: t.cardBorder, color: t.muted }}
+              {/* Badge catégorie */}
+              <span
+                className="absolute bottom-4 left-5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm"
+                style={{ background: "rgba(174,137,74,0.85)", color: "#fff" }}
               >
-                <FaLinkedin className="text-base" />
-                Voir le post original sur LinkedIn
-              </a>
-            )}
+                {article.category}
+              </span>
 
-            <div className="h-2" />
-          </div>
+              {/* Bouton fermer — par-dessus la photo, toujours visible */}
+              <button
+                onClick={(e) => { e.stopPropagation(); onClose(); }}
+                aria-label="Fermer l'article"
+                className="absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-sm transition-all duration-200 hover:bg-black/60 hover:border-white/60"
+              >
+                <IoClose className="text-lg" />
+              </button>
+            </div>
+
+            {/* Contenu scrollable — data-lenis-prevent empêche Lenis d'intercepter les events ici */}
+            <div ref={scrollRef} data-lenis-prevent className="overflow-y-auto flex-1 px-6 sm:px-8 py-6">
+              {/* Meta */}
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.date}</span>
+                <span style={{ color: t.muted }}>·</span>
+                <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.readTime} de lecture</span>
+              </div>
+
+              {/* Titre */}
+              <h2
+                className="text-2xl sm:text-3xl font-semibold leading-tight tracking-[-0.02em] mb-3"
+                style={{ color: t.text }}
+              >
+                {article.title}
+              </h2>
+              <p
+                className="text-base leading-relaxed mb-6 pb-6 border-b"
+                style={{ color: t.muted, borderColor: t.modalBorder }}
+              >
+                {article.subtitle}
+              </p>
+
+              {/* Corps de l'article */}
+              <div
+                className="article-body text-sm sm:text-base leading-relaxed space-y-4"
+                style={{ color: t.muted }}
+              >
+                {article.body}
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t" style={{ borderColor: t.modalBorder }}>
+                {article.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
+                    style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Lien LinkedIn */}
+              {article.linkedinUrl && !article.linkedinUrl.startsWith("TODO") && (
+                <a
+                  href={article.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:border-[#0077b5] hover:text-[#0077b5]"
+                  style={{ borderColor: t.cardBorder, color: t.muted }}
+                >
+                  <FaLinkedin className="text-base" />
+                  Voir le post original sur LinkedIn
+                </a>
+              )}
+
+              <div className="h-2" />
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </AnimatePresence>
 
       {/* Lightbox photo plein écran */}
       <AnimatePresence>
         {lightboxOpen && (
           <Lightbox
+            key="lightbox"
             src={article.image}
             alt={article.imageAlt}
             onClose={() => setLightboxOpen(false)}
           />
         )}
       </AnimatePresence>
-    </AnimatePresence>
+    </>
   );
 }
 
