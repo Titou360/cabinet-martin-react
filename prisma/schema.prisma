@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  category    String   @default("Réussite client")
+  image       String?
+  imageAlt    String?
+  content     String   // Tiptap JSON stringified
+  readTime    String   @default("3 min")
+  date        String
+  published   Boolean  @default(true)
+  linkedinUrl String?
+  tags        String   @default("[]") // JSON array stringified
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  logo        String?
+  url         String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Member {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  bio       String?
+  photo     String?
+  linkedin  String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Logo {
+  id        String   @id @default(cuid())
+  name      String
+  file      String
+  format    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brochure {
+  id        String   @id @default(cuid())
+  name      String
+  file      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Guide {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  file        String?
+  status      String   @default("available")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PressContact {
+  id    String  @id @default(cuid())
+  name  String
+  email String
+  phone String?
+  notes String?
+}
+
+model SiteSettings {
+  id               String @id @default("singleton")
+  totalSubventions Int    @default(2300000)
+}
+
+model Review {
+  id               String   @id @default(cuid())
+  photo            String?
+  firstName        String
+  lastName         String
+  content          String
+  linkUrl          String?
+  realisationTitle String?
+  realisationMonth String?
+  realisationYear  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

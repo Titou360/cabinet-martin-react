@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 
 import { gsap, ensureGSAP } from "@/app/lib/gsapClient";
@@ -71,6 +71,15 @@ export default function Realisations() {
   const finalBoxRef = useRef<HTMLDivElement | null>(null);
   const amountRef = useRef<HTMLSpanElement | null>(null);
 
+  const [target, setTarget] = useState(2300000);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(d => { if (d?.totalSubventions) setTarget(d.totalSubventions); })
+      .catch(() => {});
+  }, []);
+
   useGSAP(
     () => {
       ensureGSAP();
@@ -83,7 +92,7 @@ export default function Realisations() {
 
       if (!wrap || !fill) return;
 
-      const TARGET = 2300000;
+      const TARGET = target;
 
       const formatFR = (n: number) =>
         new Intl.NumberFormat("fr-FR")
@@ -226,7 +235,7 @@ export default function Realisations() {
 
       return () => ctx.revert();
     },
-    { scope: sectionRef, dependencies: [] },
+    { scope: sectionRef, dependencies: [target] },
   );
 
   return (
@@ -340,7 +349,7 @@ export default function Realisations() {
               </p>
 
               <p className="mt-2 text-3xl font-semibold tracking-[-0.02em] text-(--color-brand-100) md:text-4xl">
-                <span ref={amountRef}>2 300 000 €</span>
+                <span ref={amountRef}>{new Intl.NumberFormat("fr-FR").format(target).replace(/\u202F|\u00A0/g, "\u00A0")} €</span>
               </p>
 
               <p className="mt-2 text-sm leading-relaxed text-[rgba(249,245,236,0.72)] md:text-base">

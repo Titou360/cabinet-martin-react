@@ -5,14 +5,12 @@ import "./globals.css";
 import { fontPrimary } from "./fonts"
 
 
-import Header from "./components/Header/Header";
-import Footer from "./components/Footer/Footer";
 import SmoothScroll from "./providers/SmoothScroll";
 import GSAPProvider from "./providers/GSAPProvider";
 import CookieConsentProvider from "./providers/CookieConsentProvider";
 import JsonLd from "./components/JsonLd/JsonLd";
 import { buildOrganizationSchema, buildWebSiteSchema } from "./lib/schemas";
-import Breadcrumb from "./components/Breadcrumb/Breadcrumb";
+import AdminAwareShell from "./components/AdminAwareShell/AdminAwareShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -127,10 +125,9 @@ export default function RootLayout({
         <SmoothScroll />
         <GSAPProvider />
         <CookieConsentProvider />
-        <Header />
-        <Breadcrumb />
-        {children}
-        <Footer />
+        <AdminAwareShell>
+          {children}
+        </AdminAwareShell>
       </body>
     </html>
   );

@@ -6,130 +6,42 @@ import { motion, AnimatePresence } from "motion/react";
 import { FaLinkedin } from "react-icons/fa";
 import { TiArrowRight } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
+import { generateHTML } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
 import CustomTitle from "../ui/CustomTitle/CustomTitle";
 import { useIsDark } from "@/app/hooks/useIsDark";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Article = {
   id:          string;
-  image:       string;
-  imageAlt:    string;
+  image:       string | null;
+  imageAlt:    string | null;
   category:    string;
   title:       string;
   subtitle:    string;
   date:        string;
   readTime:    string;
-  linkedinUrl?: string;
-  tags:        string[];
-  body:        React.ReactNode;
+  linkedinUrl: string | null;
+  tags:        string; // JSON stringified array
+  content:     string; // Tiptap JSON stringified
 };
 
-// ─── Articles ─────────────────────────────────────────────────────────────────
-const ARTICLES: Article[] = [
-  {
-    id:       "aipac-mobility",
-    image:    "/img/blog/aipac-mobility.jpg",
-    imageAlt: "Les 13 vélos cargo de l'AIPAC Mobility",
-    category: "Réussite client",
-    title:    "13 vélos cargo pour lever le frein mobilité",
-    subtitle: "Comment l'AIPAC a transformé l'accompagnement vers l'emploi grâce aux Certificats d'Économie d'Énergie.",
-    date:     "2025",
-    readTime: "3 min",
-    linkedinUrl: "TODO : coller ici l'URL du post LinkedIn de l'AIPAC",
-    tags:     ["CEE", "Insertion professionnelle", "Mobilité", "Association"],
-    body: (
-      <div className="prose-content">
-        <p>
-          Se déplacer pour aller en formation, pour passer un entretien, pour prendre son poste —
-          ce qui semble évident pour beaucoup représente, pour de nombreux demandeurs d&apos;emploi,
-          un obstacle concret et quotidien. La mobilité est l&apos;un des premiers freins à
-          l&apos;insertion professionnelle, et l&apos;{" "}
-          <a
-            href="TODO : URL site ou page LinkedIn AIPAC"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            AIPAC — AIPAC Mobility
-          </a>
-          {" "}l&apos;a parfaitement identifié.
-        </p>
-
-        <h3>Un projet ambitieux, un financement à construire</h3>
-        <p>
-          L&apos;association souhaitait doter ses salariés en insertion de vélos cargo :
-          un outil de mobilité durable, accessible, et qui redonne de l&apos;autonomie.
-          13 vélos au total — pour 13 personnes qui, demain, pourront se rendre au travail
-          par leurs propres moyens.
-        </p>
-        <p>
-          Mais financer ce type de projet ne s&apos;improvise pas. C&apos;est là qu&apos;intervient
-          le mécanisme des <strong>Certificats d&apos;Économie d&apos;Énergie (CEE)</strong> :
-          un dispositif réglementaire qui oblige les fournisseurs d&apos;énergie à financer
-          des actions de transition écologique et sociale. Bien monté, il permet d&apos;obtenir
-          une subvention significative sans avance de trésorerie.
-        </p>
-
-        <h3>Le rôle du Cabinet Martin</h3>
-        <p>
-          Mylène Martin a accompagné l&apos;AIPAC de A à Z : audit d&apos;éligibilité,
-          structuration du dossier, coordination avec les partenaires énergéticiens,
-          et suivi jusqu&apos;au versement effectif. Un travail de fond, invisible pour
-          l&apos;extérieur, mais déterminant pour que le projet aboutisse.
-        </p>
-        <blockquote>
-          « Merci au Cabinet Martin, par l&apos;intermédiaire de Mylène Martin,
-          pour son engagement toujours sans faille au service de l&apos;insertion
-          et de l&apos;accompagnement. »
-          <cite>— L&apos;équipe AIPAC</cite>
-        </blockquote>
-
-        <h3>Des partenaires engagés</h3>
-        <p>
-          Ce résultat n&apos;aurait pas été possible sans la contribution de deux
-          partenaires énergéticiens qui ont joué pleinement le jeu :
-        </p>
-        <ul>
-          <li>
-            <a
-              href="TODO : URL EBS Energie"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              EBS Énergie
-            </a>
-            {" "}— dont l&apos;implication a été essentielle pour qualifier et valider le dossier CEE.
-          </li>
-          <li>
-            <a
-              href="TODO : URL PC Renovation"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              PC Rénovation
-            </a>
-            {" "}— qui a contribué à la concrétisation du projet sur le terrain.
-          </li>
-        </ul>
-
-        <h3>13 vélos, 13 opportunités</h3>
-        <p>
-          Aujourd&apos;hui, 13 salariés en parcours d&apos;insertion disposent d&apos;un
-          vélo cargo. C&apos;est 13 freins levés, 13 personnes qui peuvent s&apos;engager
-          dans une démarche de formation ou d&apos;emploi sans que le &quot;comment je fais pour
-          y aller&quot; soit un obstacle.
-        </p>
-        <p>
-          Mobilité, autonomie, dignité — trois mots qui résument l&apos;impact réel
-          d&apos;un dossier bien construit.
-        </p>
-        <p>
-          C&apos;est exactement pour ça que nous faisons ce métier.
-        </p>
-      </div>
-    ),
-  },
-  // TODO : ajouter les prochains articles ici
+// Extensions used to parse Tiptap JSON → HTML
+const TIPTAP_EXTENSIONS = [
+  StarterKit.configure({ heading: { levels: [2, 3] } }),
+  Underline,
+  Link.configure({ openOnClick: false }),
 ];
+
+function renderContent(contentJson: string): string {
+  try {
+    return generateHTML(JSON.parse(contentJson), TIPTAP_EXTENSIONS);
+  } catch {
+    return contentJson;
+  }
+}
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 function useTokens() {
@@ -159,6 +71,8 @@ function BlogCard({
   t: ReturnType<typeof useTokens>;
   onOpen: () => void;
 }) {
+  const tags: string[] = JSON.parse(article.tags || "[]");
+
   return (
     <motion.article
       className="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:border-[rgba(174,137,74,0.4)] hover:shadow-[0_0_0_1px_rgba(174,137,74,0.12),0_8px_32px_rgba(27,42,71,0.1)] cursor-pointer"
@@ -168,22 +82,24 @@ function BlogCard({
       onClick={onOpen}
     >
       {/* Image */}
-      <div className="relative aspect-video overflow-hidden">
-        <Image
-          src={article.image}
-          alt={article.imageAlt}
-          fill
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-          sizes="(max-width: 768px) 100vw, 33vw"
-        />
-        {/* Badge catégorie */}
-        <span
-          className="absolute top-3 left-3 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm"
-          style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
-        >
-          {article.category}
-        </span>
-      </div>
+      {article.image && (
+        <div className="relative aspect-video overflow-hidden">
+          <Image
+            src={article.image}
+            alt={article.imageAlt ?? article.title}
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+          {/* Badge catégorie */}
+          <span
+            className="absolute top-3 left-3 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
+            style={{ background: "var(--color-brand-100)", color: "#fff" }}
+          >
+            {article.category}
+          </span>
+        </div>
+      )}
 
       {/* Contenu */}
       <div className="flex flex-col flex-1 p-5 sm:p-6">
@@ -205,6 +121,21 @@ function BlogCard({
         >
           {article.subtitle}
         </p>
+
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-4">
+            {tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
+                style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <div className="mt-5 flex items-center gap-2">
@@ -284,8 +215,9 @@ function ArticleModal({
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const tags: string[] = JSON.parse(article.tags || "[]");
+  const bodyHtml = renderContent(article.content);
 
-  // Scroll lock : pause Lenis + overflow hidden sur le body
   useEffect(() => {
     document.body.style.overflow = "hidden";
     window.dispatchEvent(new CustomEvent("lenis:pause"));
@@ -295,7 +227,6 @@ function ArticleModal({
     };
   }, []);
 
-  // Fermeture via ESC
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -304,7 +235,6 @@ function ArticleModal({
 
   return (
     <>
-      {/* Overlay + Panel */}
       <AnimatePresence>
         <motion.div
           key="article-modal"
@@ -316,7 +246,6 @@ function ArticleModal({
           style={{ background: t.overlayBg, backdropFilter: "blur(4px)" }}
           onClick={onClose}
         >
-          {/* Panel */}
           <motion.div
             className="relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl shadow-2xl"
             style={{ background: t.modalBg, border: `1px solid ${t.modalBorder}` }}
@@ -326,49 +255,59 @@ function ArticleModal({
             transition={{ type: "spring", stiffness: 340, damping: 28 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Image + bouton fermer superposés */}
-            <div
-              className="relative h-52 sm:h-64 shrink-0 overflow-hidden cursor-zoom-in"
-              onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
-              title="Voir en plein écran"
-            >
-              <Image
-                src={article.image}
-                alt={article.imageAlt}
-                fill
-                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-                sizes="(max-width: 768px) 100vw, 672px"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
-
-              {/* Badge catégorie */}
-              <span
-                className="absolute bottom-4 left-5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm"
-                style={{ background: "rgba(174,137,74,0.85)", color: "#fff" }}
+            {/* Image + bouton fermer */}
+            {article.image && (
+              <div
+                className="relative h-52 sm:h-64 shrink-0 overflow-hidden cursor-zoom-in"
+                onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                title="Voir en plein écran"
               >
-                {article.category}
-              </span>
+                <Image
+                  src={article.image}
+                  alt={article.imageAlt ?? article.title}
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, 672px"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+                <span
+                  className="absolute bottom-4 left-5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm"
+                  style={{ background: "rgba(174,137,74,0.85)", color: "#fff" }}
+                >
+                  {article.category}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onClose(); }}
+                  aria-label="Fermer l'article"
+                  className="absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-sm transition-all duration-200 hover:bg-black/60 hover:border-white/60"
+                >
+                  <IoClose className="text-lg" />
+                </button>
+              </div>
+            )}
 
-              {/* Bouton fermer — par-dessus la photo, toujours visible */}
-              <button
-                onClick={(e) => { e.stopPropagation(); onClose(); }}
-                aria-label="Fermer l'article"
-                className="absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-sm transition-all duration-200 hover:bg-black/60 hover:border-white/60"
-              >
-                <IoClose className="text-lg" />
-              </button>
-            </div>
-
-            {/* Contenu scrollable — data-lenis-prevent empêche Lenis d'intercepter les events ici */}
+            {/* Contenu scrollable */}
             <div ref={scrollRef} data-lenis-prevent className="overflow-y-auto flex-1 px-6 sm:px-8 py-6">
-              {/* Meta */}
+              {/* Bouton fermer si pas d'image */}
+              {!article.image && (
+                <div className="flex justify-end mb-2">
+                  <button
+                    onClick={onClose}
+                    aria-label="Fermer l'article"
+                    className="inline-flex size-8 items-center justify-center rounded-full border text-[#1b2a47]/40 hover:text-[#1b2a47] hover:bg-[#1b2a47]/6 transition"
+                    style={{ borderColor: t.modalBorder }}
+                  >
+                    <IoClose className="text-base" />
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.date}</span>
                 <span style={{ color: t.muted }}>·</span>
                 <span className="text-[11px] tracking-wide" style={{ color: t.muted }}>{article.readTime} de lecture</span>
               </div>
 
-              {/* Titre */}
               <h2
                 className="text-2xl sm:text-3xl font-semibold leading-tight tracking-[-0.02em] mb-3"
                 style={{ color: t.text }}
@@ -382,28 +321,29 @@ function ArticleModal({
                 {article.subtitle}
               </p>
 
-              {/* Corps de l'article */}
+              {/* Corps — rendu depuis Tiptap JSON */}
               <div
                 className="article-body text-sm sm:text-base leading-relaxed space-y-4"
                 style={{ color: t.muted }}
-              >
-                {article.body}
-              </div>
+                dangerouslySetInnerHTML={{ __html: bodyHtml }}
+              />
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t" style={{ borderColor: t.modalBorder }}>
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
-                    style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t" style={{ borderColor: t.modalBorder }}>
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
+                      style={{ background: t.badgeBg, color: "var(--color-brand-100)" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
 
-              {/* Lien LinkedIn */}
+              {/* LinkedIn */}
               {article.linkedinUrl && !article.linkedinUrl.startsWith("TODO") && (
                 <a
                   href={article.linkedinUrl}
@@ -423,13 +363,12 @@ function ArticleModal({
         </motion.div>
       </AnimatePresence>
 
-      {/* Lightbox photo plein écran */}
       <AnimatePresence>
-        {lightboxOpen && (
+        {lightboxOpen && article.image && (
           <Lightbox
             key="lightbox"
             src={article.image}
-            alt={article.imageAlt}
+            alt={article.imageAlt ?? article.title}
             onClose={() => setLightboxOpen(false)}
           />
         )}
@@ -439,11 +378,26 @@ function ArticleModal({
 }
 
 // ─── Section principale ───────────────────────────────────────────────────────
+const PAGE_SIZE = 3;
+
 export default function BlogSection() {
   const t = useTokens();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [articles, setArticles]       = useState<Article[]>([]);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [openId, setOpenId]           = useState<string | null>(null);
 
-  const openArticle = ARTICLES.find((a) => a.id === openId) ?? null;
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then(setArticles)
+      .catch(() => {});
+  }, []);
+
+  const openArticle = articles.find((a) => a.id === openId) ?? null;
+  const visible     = articles.slice(0, visibleCount);
+  const hasMore     = visibleCount < articles.length;
+
+  if (articles.length === 0) return null;
 
   return (
     <>
@@ -451,7 +405,6 @@ export default function BlogSection() {
         className="transition-colors duration-500"
         style={{ background: t.bg }}
       >
-        {/* Accent line top */}
         <div className="h-px bg-linear-to-r from-transparent via-(--color-brand-100)/30 to-transparent" />
 
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:px-8 md:py-20 lg:py-24">
@@ -467,20 +420,38 @@ export default function BlogSection() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ARTICLES.map((article) => (
-              <BlogCard
+          {/* Grille centrée */}
+          <div className="flex flex-wrap justify-center gap-6">
+            {visible.map((article) => (
+              <div
                 key={article.id}
-                article={article}
-                t={t}
-                onOpen={() => setOpenId(article.id)}
-              />
+                className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+              >
+                <BlogCard
+                  article={article}
+                  t={t}
+                  onOpen={() => setOpenId(article.id)}
+                />
+              </div>
             ))}
           </div>
+
+          {/* Voir plus */}
+          {hasMore && (
+            <div className="flex justify-end mt-8">
+              <button
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border text-sm font-semibold transition-all duration-200 hover:border-[rgba(174,137,74,0.5)] hover:text-(--color-brand-100)"
+                style={{ borderColor: "rgba(174,137,74,0.25)", color: "var(--color-brand-100)" }}
+              >
+                Voir plus
+                <TiArrowRight className="text-base transition-transform duration-200 group-hover:translate-x-1" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Modal */}
       {openArticle && (
         <ArticleModal
           article={openArticle}
