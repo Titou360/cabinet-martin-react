@@ -102,8 +102,8 @@ export const metadata: Metadata = {
   },
 
   // ── Manifest / couleur ──────────────────────────────────────────────────────
-  // manifest: "/manifest.json", // TODO : à créer si PWA souhaitée
-  // themeColor: "#1B2A47",      // TODO : à décommenter quand confirmé
+  manifest: "/manifest.webmanifest",
+  themeColor: "#1B2A47",
 };
 
 
