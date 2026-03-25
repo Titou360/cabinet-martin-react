@@ -37,6 +37,27 @@ function LinkIcon({ url }: { url: string }) {
   return                         <TiLink       className="text-[#ae894a] text-lg" />;
 }
 
+function ReviewAvatar({ review }: { review: Review }) {
+  const [imgError, setImgError] = useState(false);
+  if (review.photo && !imgError) {
+    return (
+      <Image
+        src={review.photo}
+        alt={review.firstName}
+        width={40} height={40}
+        className="rounded-full object-cover shrink-0"
+        style={{ width: 40, height: 40 }}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+  return (
+    <div className="w-10 h-10 rounded-full bg-[#1b2a47]/10 shrink-0 flex items-center justify-center text-[#1b2a47]/40 text-sm font-semibold">
+      {review.firstName[0]}{review.lastName[0]}
+    </div>
+  );
+}
+
 export default function Testimoniales() {
   const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -81,19 +102,7 @@ export default function Testimoniales() {
               {/* Séparateur + auteur */}
               <div className="border-t border-[#1b2a47]/8 mt-4 pt-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  {review.photo ? (
-                    <Image
-                      src={review.photo}
-                      alt={review.firstName}
-                      width={40} height={40}
-                      className="rounded-full object-cover shrink-0"
-                      style={{ width: 40, height: 40 }}
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#1b2a47]/10 shrink-0 flex items-center justify-center text-[#1b2a47]/40 text-sm font-semibold">
-                      {review.firstName[0]}{review.lastName[0]}
-                    </div>
-                  )}
+                  <ReviewAvatar review={review} />
                   <p className="text-sm font-semibold text-[#1b2a47] truncate">
                     {review.firstName} {review.lastName}
                   </p>
