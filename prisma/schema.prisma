@@ -3,17 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model AdminUser {
-  id           String @id @default(cuid())
+  id           String @id @default(cuid()) @map("_id")
   email        String @unique
   passwordHash String
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   token     String   @unique @default(cuid())
   expiresAt DateTime
   used      Boolean  @default(false)
@@ -21,24 +22,24 @@ model PasswordResetToken {
 }
 
 model Article {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   title       String
   subtitle    String
   category    String   @default("Réussite client")
   image       String?
   imageAlt    String?
-  content     String   // Tiptap JSON stringified
+  content     String
   readTime    String   @default("3 min")
   date        String
   published   Boolean  @default(true)
   linkedinUrl String?
-  tags        String   @default("[]") // JSON array stringified
+  tags        String   @default("[]")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Reference {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   name        String
   description String?
   logo        String?
@@ -49,7 +50,7 @@ model Reference {
 }
 
 model Member {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   role      String
   bio       String?
@@ -61,7 +62,7 @@ model Member {
 }
 
 model Logo {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   file      String
   format    String?
@@ -70,7 +71,7 @@ model Logo {
 }
 
 model Brochure {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   name      String
   file      String
   createdAt DateTime @default(now())
@@ -78,7 +79,7 @@ model Brochure {
 }
 
 model Guide {
-  id          String   @id @default(cuid())
+  id          String   @id @default(cuid()) @map("_id")
   title       String
   description String?
   file        String?
@@ -88,7 +89,7 @@ model Guide {
 }
 
 model PressContact {
-  id    String  @id @default(cuid())
+  id    String  @id @default(cuid()) @map("_id")
   name  String
   email String
   phone String?
@@ -96,12 +97,12 @@ model PressContact {
 }
 
 model SiteSettings {
-  id               String @id @default("singleton")
+  id               String @id @default("singleton") @map("_id")
   totalSubventions Int    @default(2300000)
 }
 
 model Review {
-  id               String   @id @default(cuid())
+  id               String   @id @default(cuid()) @map("_id")
   photo            String?
   firstName        String
   lastName         String
