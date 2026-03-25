@@ -121,9 +121,9 @@ export function buildWebSiteSchema() {
 export function buildLocalBusinessSchema() {
   return {
     "@context": "https://schema.org",
-    "@id": `${SITE_URL}/#localbusiness`,
     ...organizationBase,
     "@type": ["LocalBusiness", "ProfessionalService"],
+    "@id": `${SITE_URL}/#localbusiness`,
     priceRange: "Sur devis — paiement à la réussite",
     currenciesAccepted: "EUR",
     paymentAccepted: "Paiement à la réussite",
