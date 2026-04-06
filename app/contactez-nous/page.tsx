@@ -284,7 +284,7 @@ export default function ContactPage() {
                   </svg>
                 ),
                 label: "Email",
-                content: <a href="mailto:contact@cabinetmartin-ma.fr" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>contact@cabinetmartin-ma.fr</a>,
+                content: <a href="mailto:mylene@cabinetmartin-ma.fr" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>mylene@cabinetmartin-ma.fr</a>,
               },
               {
                 icon: (
@@ -293,7 +293,7 @@ export default function ContactPage() {
                   </svg>
                 ),
                 label: "Téléphone",
-                content: <a href="tel:+33612345678" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>+33 6 12 34 56 78</a>,
+                content: <a href="tel:+33645653761" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>+33 6 45 65 37 61</a>,
               },
               {
                 icon: (
