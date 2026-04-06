@@ -36,8 +36,8 @@ const organizationBase = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: "TODO : latitude GPS",   // TODO : à compléter depuis Google Maps
-    longitude: "TODO : longitude GPS", // TODO : à compléter depuis Google Maps
+    latitude: "43.8007031",
+    longitude: "-0.9191962",
   },
   telephone: "+33645653761",
   email: "contact@cabinetmartin-ma.fr",

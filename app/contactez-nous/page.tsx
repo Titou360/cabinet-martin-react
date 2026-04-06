@@ -284,7 +284,7 @@ export default function ContactPage() {
                   </svg>
                 ),
                 label: "Email",
-                content: <a href="mailto:contact@exemple.fr" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>contact@exemple.fr</a>,
+                content: <a href="mailto:contact@cabinetmartin-ma.fr" className="transition-colors hover:underline" style={{ color: tokens.infoText }}>contact@cabinetmartin-ma.fr</a>,
               },
               {
                 icon: (
