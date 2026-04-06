@@ -323,7 +323,7 @@ export default function NosServices() {
               <ServiceCard
                 badge="01"
                 title="Audit d'éligibilité"
-                desc="Analyse rapide de votre situation et cadrage des leviers mobilisables (CEE, critères, calendrier)."
+                desc="Analyse rapide de votre situation et cadrage des leviers mobilisables."
               />
             </div>
 

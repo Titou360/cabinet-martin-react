@@ -55,7 +55,7 @@ export default function HeroSection() {
 
               {/* Sous-titre */}
               <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/75 sm:text-base">
-                Audit, montage et pilotage de dossiers CEE. Une approche claire,
+                Audit, montage et pilotage de dossiers. Une approche claire,
                 rapide et orientée résultat pour maximiser vos chances d&apos;aboutir.
               </p>
 

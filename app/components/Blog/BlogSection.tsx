@@ -416,7 +416,7 @@ export default function BlogSection() {
             />
             <p className="mt-4 text-sm leading-relaxed md:text-base" style={{ color: t.muted }}>
               Des projets concrets, des financements obtenus, des impacts réels.
-              Découvrez comment nos clients ont transformé leurs ambitions grâce aux CEE.
+              Découvrez comment nos clients ont transformé leurs ambitions.
             </p>
           </div>
 

@@ -105,16 +105,20 @@ export default function Footer() {
             </div>
 
             <p className="mt-5 text-sm leading-relaxed text-white/70">
-              Accompagnement à la recherche et à l’obtention de subventions
-              (CEE). Une démarche structurée, rapide et conforme, avec une
-              logique de rémunération alignée sur la réussite.
+              Accompagnement à la recherche et à l’obtention de subventions. Une
+              démarche structurée, rapide et conforme, avec une logique de
+              rémunération alignée sur la réussite.
             </p>
           </div>
 
           <div className="flex w-full flex-col gap-3 md:w-auto md:min-w-70">
             <GoldButton href="/prendre-rdv" text="Prendre RDV" data-fx="cta" />
 
-            <FooterButton href="/contactez-nous" text="Contactez-nous" data-fx="cta" />
+            <FooterButton
+              href="/contactez-nous"
+              text="Contactez-nous"
+              data-fx="cta"
+            />
           </div>
         </div>
 
@@ -180,23 +184,23 @@ export default function Footer() {
               <p>
                 <a
                   className="hover:text-(--color-brand-100)"
-                  href="mailto:contact@cabinetmartin-ma.fr"
+                  href="mailto:mylene@cabinetmartin-ma.fr"
                 >
-                  contact@cabinetmartin-ma.fr
+                  mylene@cabinetmartin-ma.fr
                 </a>
               </p>
 
-              <p>
+              <p className="inline-flex gap-1">
+                Alexandre
                 <a
                   className="hover:text-(--color-brand-100)"
-                  href="tel:+33000000000"
+                  href="tel:+33645653761"
                 >
-                  +33 0 00 00 00 00
+                  06.45.65.37.61
                 </a>
               </p>
 
               <SocialBar />
-
             </div>
           </div>
 

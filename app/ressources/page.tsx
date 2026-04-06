@@ -292,7 +292,7 @@ export default function Ressources() {
                   className="mt-1 inline-block text-sm font-medium hover:text-(--color-brand-100) transition-colors"
                   style={{ color: t.text }}
                 >
-                  contact@cabinetmartin-ma.fr
+                  mylene@cabinetmartin-ma.fr
                 </a>
               </div>
             </div>
