@@ -104,7 +104,7 @@ export default async function ProfessionnelsPage() {
             <p className="text-xs tracking-widest uppercase text-(--color-brand-200)/60 mb-4">Résultats</p>
             <div className="grid grid-cols-3 gap-6 text-center">
               <div>
-                <p className="text-3xl font-bold text-[rgba(174,137,74,0.9)]">{formatMillions(totalSubventions)}</p>
+                <p className="text-3xl font-bold text-[rgba(174,137,74,0.9)]">+ de {formatMillions(totalSubventions)}</p>
                 <p className="text-xs text-(--text)/60 mt-1">Subventions obtenues</p>
               </div>
               <div>
