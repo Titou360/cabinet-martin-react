@@ -7,10 +7,15 @@ import Image from "next/image";
 
 import { gsap, ensureGSAP } from "@/app/lib/gsapClient";
 
-import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import { IoMoonOutline, IoSunnyOutline, IoChevronDownOutline } from "react-icons/io5";
 import SocialBar from "../ui/SocialBar/SocialBar";
 
 type NavItem = { n: string; label: string; href: string };
+
+const SERVICES_SUB = [
+  { label: "Services pour particuliers",    href: "/particuliers"   },
+  { label: "Services pour professionnels",  href: "/professionnels" },
+];
 
 const PhoneLink = ({
   number,
@@ -50,6 +55,7 @@ export default function Header() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Theme init
@@ -215,7 +221,10 @@ export default function Header() {
     }
   }, [isOpen]);
 
-  const onNavClick = () => setIsOpen(false);
+  const onNavClick = () => { setIsOpen(false); setServicesOpen(false); };
+
+  // Ferme le dropdown services quand le menu se ferme
+  useEffect(() => { if (!isOpen) setServicesOpen(false); }, [isOpen]);
 
   return (
     <div ref={scopeRef}>
@@ -340,13 +349,48 @@ export default function Header() {
                       <span className="menu-dash h-px w-10 bg-(--menuDash) transition-transform duration-500 group-hover:scale-x-[2.2]" />
                     </div>
 
-                    <Link
-                      href={item.href}
-                      onClick={onNavClick}
-                      className="menu-label mt-2 inline-block max-w-full wrap-break-word text-[clamp(1.4rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.01em] text-[rgba(249,245,236,0.92)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
-                    >
-                      {item.label}
-                    </Link>
+                    {item.n === "02" ? (
+                      <div className="menu-label mt-2">
+                        <button
+                          onClick={() => setServicesOpen((v) => !v)}
+                          className="inline-flex items-center gap-2 max-w-full text-[clamp(1.4rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.01em] text-[rgba(249,245,236,0.92)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
+                          aria-expanded={servicesOpen}
+                        >
+                          {item.label}
+                          <IoChevronDownOutline
+                            className="shrink-0 transition-transform duration-300"
+                            style={{ fontSize: "clamp(1rem,2.5vw,1.8rem)", transform: servicesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                          />
+                        </button>
+
+                        <div
+                          className="overflow-hidden transition-all duration-300 ease-in-out"
+                          style={{ maxHeight: servicesOpen ? "8rem" : "0px", opacity: servicesOpen ? 1 : 0 }}
+                        >
+                          <ul className="mt-3 space-y-2 pl-1">
+                            {SERVICES_SUB.map((sub) => (
+                              <li key={sub.href}>
+                                <Link
+                                  href={sub.href}
+                                  onClick={onNavClick}
+                                  className="inline-block text-[clamp(0.9rem,2vw,1.4rem)] leading-snug text-[rgba(249,245,236,0.7)] hover:text-[rgba(249,245,236,0.95)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100)"
+                                >
+                                  — {sub.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={onNavClick}
+                        className="menu-label mt-2 inline-block max-w-full wrap-break-word text-[clamp(1.4rem,3.5vw,2.6rem)] leading-[1.02] tracking-[-0.01em] text-[rgba(249,245,236,0.92)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-brand-100) focus-visible:ring-offset-4 focus-visible:ring-offset-(--overlay)"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

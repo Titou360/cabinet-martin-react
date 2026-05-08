@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 
 import { gsap, ScrollTrigger, ensureGSAP } from "@/app/lib/gsapClient";
@@ -352,6 +353,47 @@ export default function NosServices() {
                 desc="Rémunération alignée : vous payez quand le projet aboutit (selon conditions définies)."
               />
             </div>
+          </div>
+
+          {/* CTA audience */}
+          <div className="grid gap-6 md:grid-cols-2 pt-4 border-t border-[rgba(249,245,236,0.12)]">
+            <Link
+              href="/particuliers"
+              className={[
+                "group flex flex-col gap-3 rounded-2xl border p-6 backdrop-blur transition-[border-color,box-shadow,transform] duration-300",
+                "border-[rgba(249,245,236,0.18)] bg-[rgba(249,245,236,0.04)]",
+                "hover:-translate-y-0.5 hover:border-[rgba(174,137,74,0.55)]",
+                "hover:shadow-[0_0_0_1px_rgba(174,137,74,0.22),0_0_28px_rgba(174,137,74,0.14)]",
+              ].join(" ")}
+            >
+              <span className="text-xs tracking-widest uppercase text-[rgba(249,245,236,0.5)]">Vous êtes</span>
+              <span className="text-xl font-semibold text-[rgba(249,245,236,0.95)]">Particulier</span>
+              <span className="text-sm text-[rgba(249,245,236,0.65)] leading-relaxed">
+                MaPrime Rénov&apos;, CEE, photovoltaïque, rénovation habitat, autoconsommation.
+              </span>
+              <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-[rgba(174,137,74,0.9)] group-hover:gap-2.5 transition-all duration-200">
+                Découvrir <span aria-hidden>→</span>
+              </span>
+            </Link>
+
+            <Link
+              href="/professionnels"
+              className={[
+                "group flex flex-col gap-3 rounded-2xl border p-6 backdrop-blur transition-[border-color,box-shadow,transform] duration-300",
+                "border-[rgba(249,245,236,0.18)] bg-[rgba(249,245,236,0.04)]",
+                "hover:-translate-y-0.5 hover:border-[rgba(174,137,74,0.55)]",
+                "hover:shadow-[0_0_0_1px_rgba(174,137,74,0.22),0_0_28px_rgba(174,137,74,0.14)]",
+              ].join(" ")}
+            >
+              <span className="text-xs tracking-widest uppercase text-[rgba(249,245,236,0.5)]">Vous êtes</span>
+              <span className="text-xl font-semibold text-[rgba(249,245,236,0.95)]">Professionnel</span>
+              <span className="text-sm text-[rgba(249,245,236,0.65)] leading-relaxed">
+                CEE entreprises, subventions, fonds européens, accompagnement sur mesure.
+              </span>
+              <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-[rgba(174,137,74,0.9)] group-hover:gap-2.5 transition-all duration-200">
+                Découvrir <span aria-hidden>→</span>
+              </span>
+            </Link>
           </div>
         </div>
       </div>
