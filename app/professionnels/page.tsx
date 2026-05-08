@@ -1,5 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { prisma } from "@/app/lib/prisma";
+
+async function getTotalSubventions(): Promise<number> {
+  try {
+    const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+    return settings?.totalSubventions ?? 2300000;
+  } catch {
+    return 2300000;
+  }
+}
+
+function formatMillions(amount: number): string {
+  const millions = amount / 1_000_000;
+  return millions % 1 === 0
+    ? `${millions} M€`
+    : `${millions.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} M€`;
+}
 
 export const metadata: Metadata = {
   title: "Services pour professionnels",
@@ -31,7 +48,8 @@ const SERVICES = [
   },
 ];
 
-export default function ProfessionnelsPage() {
+export default async function ProfessionnelsPage() {
+  const totalSubventions = await getTotalSubventions();
   return (
     <main className="min-h-screen bg-(--bg) text-(--text)">
       {/* Hero */}
@@ -86,7 +104,7 @@ export default function ProfessionnelsPage() {
             <p className="text-xs tracking-widest uppercase text-(--color-brand-200)/60 mb-4">Résultats</p>
             <div className="grid grid-cols-3 gap-6 text-center">
               <div>
-                <p className="text-3xl font-bold text-[rgba(174,137,74,0.9)]">2,3 M€</p>
+                <p className="text-3xl font-bold text-[rgba(174,137,74,0.9)]">{formatMillions(totalSubventions)}</p>
                 <p className="text-xs text-(--text)/60 mt-1">Subventions obtenues</p>
               </div>
               <div>
